@@ -1,5 +1,6 @@
 # Forget the conventional - Shift to SDV
 
+<<<<<<< HEAD
 This repository provides a starter template for solving the "Forget the conventional - Shift to SDV" challenge using the following Eclipse SDV projects:
 * [Ankaios](https://eclipse-ankaios.github.io/ankaios/latest/) - an embedded container and workload orchestrator targeted at automotive HPCs
 * [eCAL](https://ecal.io/) – a fast communication middleware following the pub-sub principle
@@ -7,11 +8,16 @@ This repository provides a starter template for solving the "Forget the conventi
 * [Ankaios Dashboard](https://github.com/FelixMoelders/ankaios-dashboard) – a graphical user interface for the Ankaios orchestrator
 
 The repo contains a pre-configured devcontainer that makes it easy for you to start developing and building container applications managed by Ankaios.
+=======
+This repository provides a starter template for solving the Forget the conventional - Shift to SDV challenge using the [Ankaios](https://github.com/eclipse-ankaios/ankaios) workload orchestrator.
+It contains a pre-configured devcontainer that makes it easy for you to start developing and building container applications managed by Ankaios.
+>>>>>>> 4faa364 (Add basic devcontainer and ecal example workload)
 
 The container is designed to have an immediately running environment combined with a development environment for Ankaios workloads. Once triggered, all workloads are initially started and sample data is output.
 
 ## Links
 
+<<<<<<< HEAD
 - [Ankaios docs](https://eclipse-ankaios.github.io/ankaios/0.5/)
 - [Ankaios Dashboard](https://github.com/FelixMoelders/ankaios-dashboard)
 - [Ankaios quickstart](https://eclipse-ankaios.github.io/ankaios/0.5/usage/quickstart/)
@@ -70,11 +76,20 @@ New workloads listed in the manifest can upgrade the vehicle and add additional 
 The Symphony Provider can also be used to monitor the state of the Ankaios cluster and with this of the vehicle and report it to the cloud for auditing and debugging purposes.
 
 # Development environment
+=======
+- [Ankaios docs](https://eclipse-ankaios.github.io/ankaios/0.4/)
+- [Ankaios quickstart](https://eclipse-ankaios.github.io/ankaios/0.4/usage/quickstart/)
+- [Podman](https://docs.podman.io/en/v4.6.1/)
+- [What are devcontainers?](https://containers.dev/)
+
+## Development environment
+>>>>>>> 4faa364 (Add basic devcontainer and ecal example workload)
 
 The following is provided inside the devcontainer:
 
 - Ankaios executables (`ank-server`, `ank-agent` and `ank`)
 
+<<<<<<< HEAD
 - Podman 4.9.3
 
 - Pre-configured Ankaios startup config [shift2sdv_manifest.yaml](shift2sdv_manifest.yaml)
@@ -115,6 +130,20 @@ ecal_mon_tui
 ```
 
 **Note:** Make sure to start the podman container receiving eCAL topic data with `--ipc=host`.
+=======
+- Podman 4.6.2
+
+- Pre-configured Ankaios startup config [startupState.yaml](./config/startupState.yaml)
+
+- Automation scripts for starting and stopping all workloads of the challenge:
+    - run_shift2sdv.sh (TODO! must be created)
+    - shutdown_shift2sdv.sh (TODO! must be created)
+
+- REST API providing [resource usage statistics](#resource-usage-statistics) for the sample scenario about intelligent orchestrator
+
+- Exposed port:
+    - 25551: for optionally using the Ankaios CLI outside of the devcontainer
+>>>>>>> 4faa364 (Add basic devcontainer and ecal example workload)
 
 ## Run devcontainer with VSCode
 
@@ -145,6 +174,7 @@ Start the devcontainer with the required mount points:
 docker run -it --privileged --name shift2sdv-dev -v <absolute/path/to>/challenge-shift-to-sdv:/workspaces/shift2sdv -p 25551:25551 --workdir /workspaces/shift2sdv shift2sdv-dev:0.1 /bin/bash
 ```
 
+<<<<<<< HEAD
 # Adding a new application
 
 To add your new shiny application, just create a new folder under [apps](/apps) and add a Dockerfile that specifies the build and containerization steps. For an easy start you can also just copy one of the examples there and update it as you please :rocket:
@@ -181,3 +211,30 @@ The following logs will be written by Ankaios in the `.logs` folder of the main 
 * ank-server
 * ank-agent-hpc1
 * ank-agent-hpc2
+=======
+## Container logs
+
+Use the [podman logs](https://docs.podman.io/en/v4.6.1/markdown/podman-logs.1.html) command to check the logs of your container applications for debugging purposes.
+
+```shell
+podman ps -a
+podman logs -f <container_name|container_id>
+```
+
+## Ankaios logs
+
+There are log files for debugging purposes of Ankaios server and agent.
+
+The Ankaios server logs can be viewed by executing the following command:
+
+```shell
+tail -f /var/log/ankaios-server.log
+```
+
+The Ankaios agent logs can be viewed by executing the following command:
+
+```shell
+tail -f /var/log/ankaios-agent_A.log
+```
+
+>>>>>>> 4faa364 (Add basic devcontainer and ecal example workload)
