@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 .idea
 
+=======
+>>>>>>> 4faa364 (Add basic devcontainer and ecal example workload)
 # Python
 __pycache__/
 *.pyc
@@ -10,6 +13,7 @@ __pycache__/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+<<<<<<< HEAD
 *.code-workspace
 
 # Custom folders
@@ -25,3 +29,6 @@ venv
 # measurements
 *.zip
 measurements
+=======
+*.code-workspace
+>>>>>>> 4faa364 (Add basic devcontainer and ecal example workload)
