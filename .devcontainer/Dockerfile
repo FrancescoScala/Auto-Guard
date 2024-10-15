@@ -15,39 +15,21 @@
 FROM ghcr.io/eclipse-ankaios/app-ankaios-dev:0.4.1 AS dev
 ARG TARGETARCH
 
-RUN apt-get update && apt-get -y install \
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install \
+    software-properties-common \
     git \
     jq \
     python3 \
     python3-pip \
-    # eCAL dependencies
-    libc6 \
-    libcurl4 \
-    libgcc-s1 \
-    libhdf5-103 \
-    libprotobuf23 \
-    libqt5core5a \
-    libqt5gui5 \
-    libqt5widgets5 \
-    libqt5svg5 \
-    libstdc++6 \
-    sysstat \
-    ifstat \
-    libqwt-qt5-6 \
-    libyaml-cpp0.7 \
     # Add your development tools here ...
     # Cleanup
     && rm -rf /var/lib/apt/lists/* \
     && curl -sL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${TARGETARCH} -o /usr/bin/yq \
-    && chmod +x /usr/bin/yq
-
-# install eCAL
-RUN curl -sL https://github.com/eclipse-ecal/ecal/releases/download/v5.11.3/ecal_5.11.3-jammy_amd64.deb -o /tmp/ecal.dep \
-    && dpkg -i /tmp/ecal.dep \
-    && curl -sL https://github.com/eclipse-ecal/ecal/releases/download/v5.11.3/ecal5-5.11.3-1jammy-cp310-cp310-linux_x86_64.whl -o /tmp/ecal5-5.11.3-1jammy-cp310-cp310-linux_x86_64.whl \
-    && pip3 install --no-cache-dir /tmp/ecal5-5.11.3-1jammy-cp310-cp310-linux_x86_64.whl \
-    # Cleanup
-    && rm -rf /tmp/ecal.dep /tmp/ecal5-5.11.3-1jammy-cp310-cp310-linux_x86_64.whl
+    && chmod +x /usr/bin/yq \
+    # install eCAL
+    && add-apt-repository ppa:ecal/ecal-5.12 \
+    && apt-get install -y python3-ecal5
 
 # Trust all repositories in this container
 RUN git config --global --add safe.directory '*' \
