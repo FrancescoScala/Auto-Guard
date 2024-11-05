@@ -16,6 +16,14 @@ The container is designed to have an immediately running environment combined wi
 - [Podman](https://docs.podman.io/en/v4.9.3/)
 - [What are devcontainers?](https://containers.dev/)
 
+# Challenge
+
+The challenge is to turn an ordinary vehicle into an innovation platform. To achive this two paths are available to the participants: the "Feature Path" and the "Connectivity Path". Both paths have different targets, yet combined showcase what a full-blown software-defined vehicle is capable of.
+
+The following diagram shows the context view of the two paths:
+
+![Context View](diagrams/context.drawio.svg)
+
 ## Feature Path
 
 Unleash your creativity and develop innovative containerized applications managed by Ankaios using real data from the test vehicle.
