@@ -12,7 +12,7 @@
 
 # SPDX-License-Identifier: Apache-2.0
 
-FROM ghcr.io/eclipse-ankaios/app-ankaios-dev:0.4.1 AS dev
+FROM ghcr.io/eclipse-ankaios/app-ankaios-dev:0.5.0-rc1 AS dev
 ARG TARGETARCH
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
