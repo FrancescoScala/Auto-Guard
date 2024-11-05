@@ -38,11 +38,17 @@ TODO
 
 TODO
 
+### Object detection
+
+Using the front camera of the test vehicle, an AI model runs object detection.
+
+You can get the inference results by subscribing to the eCAL topic `object_detection`. More infomration on the data provided by the topic can be found [here](object_detection.md).
+
 ### Traffic sign detection
 
 Using the front camera of the test vehicle, an AI model predicts the class ID of traffic signs.
 
-You can get the inference results by subscribing to the eCAL topic `traffic_sign_detection`. More infomration on the objects provided by the topic can be found [here](traffic_sign_detection.md). 
+You can get the inference results by subscribing to the eCAL topic `traffic_sign_detection`. More infomration on the data provided by the topic can be found [here](traffic_sign_detection.md).
 
 ### Radar sensor data
 

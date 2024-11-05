@@ -5,10 +5,12 @@ The inference results are provided in the eCAL topic `traffic_sign_detection` as
 ```json
 {
     "iso_timestamp": "2024-11-04T12:50:48.697684",
+    // Class labels for each detected traffic sign
     "class_ids": [
         22.0, // info_crosswalk
         40.0 // priority_stop
     ],
+    // Confidence scores for detected traffic sign
     "confidences": [
         0.7705173492431641, // confidence info_crosswalk
         0.29842549562454224 // confidence priority_stop
