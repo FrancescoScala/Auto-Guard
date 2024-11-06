@@ -9,3 +9,6 @@ __pycache__/
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
+
+# Custom folders
+measurements/
