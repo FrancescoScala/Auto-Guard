@@ -10,7 +10,6 @@
    "runArgs": [
 	"--privileged"
    ],
-   "appPort": ["25551:25551"],
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
@@ -18,7 +17,6 @@
 			// Set *default* container specific settings.json values on container create.
 			"settings": {
 			},
-			
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"eamodio.gitlens",
