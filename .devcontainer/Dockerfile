@@ -14,6 +14,7 @@
 
 FROM ghcr.io/eclipse-ankaios/app-ankaios-dev:0.5.0-rc1 AS dev
 ARG TARGETARCH
+ARG USERNAME=ankaios
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install \
@@ -30,6 +31,15 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     # install eCAL
     && add-apt-repository ppa:ecal/ecal-5.12 \
     && apt-get install -y python3-ecal5
+
+# work in insecure mode in the dev container
+RUN echo 'export ANKAGENT_INSECURE=true' | tee -a /home/${USERNAME}/.bashrc /home/${USERNAME}/.zshrc
+RUN echo 'export ANKSERVER_INSECURE=true' | tee -a /home/${USERNAME}/.bashrc /home/${USERNAME}/.zshrc
+RUN echo 'export ANK_INSECURE=true' | tee -a /home/${USERNAME}/.bashrc /home/${USERNAME}/.zshrc
+
+# add my favorite convinence aliases
+RUN echo 'alias ..="cd .."' | tee -a /home/${USERNAME}/.bashrc /home/${USERNAME}/.zshrc
+RUN echo 'alias ...="cd ../.."' | tee -a /home/${USERNAME}/.bashrc /home/${USERNAME}/.zshrc
 
 # Trust all repositories in this container
 RUN git config --global --add safe.directory '*' \
