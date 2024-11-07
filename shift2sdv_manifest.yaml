@@ -1,1 +1,16 @@
 apiVersion: v0.1
+workloads:
+  symphony_provider:
+    runtime: podman
+    agent: hpc1
+    restart: false
+    controlInterfaceAccess:
+      allowRules:
+        - type: StateRule
+          operation: ReadWrite
+          filterMask:
+            - "*"
+    restartPolicy: NEVER
+    runtimeConfig: |
+      image: ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/symphony_provider:rc1
+      commandOptions: [ "--net=host", "-e", "VIN=42"]
