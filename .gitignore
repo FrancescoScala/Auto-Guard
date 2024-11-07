@@ -12,3 +12,6 @@ __pycache__/
 
 # Custom folders
 measurements/
+
+# logs
+.logs
