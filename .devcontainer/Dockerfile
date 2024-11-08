@@ -24,13 +24,13 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     python3 \
     python3-pip \
     # Add your development tools here ...
-    # Cleanup
-    && rm -rf /var/lib/apt/lists/* \
     && curl -sL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${TARGETARCH} -o /usr/bin/yq \
     && chmod +x /usr/bin/yq \
     # install eCAL
     && add-apt-repository ppa:ecal/ecal-5.12 \
-    && apt-get install -y python3-ecal5
+    && apt-get install -y python3-ecal5 \
+    # Cleanup
+    && rm -rf /var/lib/apt/lists/*
 
 # work in insecure mode in the dev container
 RUN echo 'export ANKAGENT_INSECURE=true' | tee -a /home/${USERNAME}/.bashrc /home/${USERNAME}/.zshrc
