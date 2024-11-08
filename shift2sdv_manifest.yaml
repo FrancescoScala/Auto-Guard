@@ -14,3 +14,11 @@ workloads:
     runtimeConfig: |
       image: ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/symphony_provider:rc1
       commandOptions: [ "--net=host", "-e", "VIN=42"]
+  example_app:
+    runtime: podman
+    agent: hpc2
+    restart: false
+    restartPolicy: NEVER
+    runtimeConfig: |
+      image: ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/example_app:rc1
+      commandOptions: [ "--net=host", "-e", "VIN=42"]

@@ -20,4 +20,4 @@ RUN pip install --break-system-packages --no-cache-dir -r requirements.txt
 
 COPY example_app.py ./
 
-CMD [ "python", "-u", "./example_app.py" ]
+CMD [ "python3", "-u", "./example_app.py" ]
