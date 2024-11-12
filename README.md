@@ -90,6 +90,18 @@ Start your application in another terminal window and check that it is receiving
 
 For debugging, it might help to run the eCAL Monitor terminal UI `ecal_mon_tui` application inside your containerized application (if you have the eCAL binaries installed). This interactive terminal UI would display all eCAL topics with their content and metadata. The eCAL Monitor is always helpful for debugging, because if it does not see any data, it is very likely that your application is not receiving any data.
 
+Debug your new application, assuming eCAL 5.12 is installed there (if you have already openend a shell inside your container, just skip this step):
+
+```shell
+podman run -it --rm --ipc=host --pid=host --network=host --entrypoint /bin/bash <your_container_image> ecal_mon_tui
+```
+
+Start the eCAL Monitor terminal UI:
+
+```shell
+ecal_mon_tui
+```
+
 ## Run devcontainer with VSCode
 
 ### Prerequisites
