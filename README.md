@@ -32,11 +32,11 @@ Data is delivered via eCAL topics that your application subscribes to.
 
 ### GNSS
 
-TODO
+Subscribe to the eCAL topic `gps_data` within your custom application to receive live GPS data. More information about the data provided by the topic can be found [here](gnss_data.md).
 
 ### Vehilce dynamics
 
-TODO
+Subscribe to the eCAL topic `vehicle_dynamics` within your custom application to receive vehicle dynamics data from sensors such as speed, steering angle, and acceleration. More information about the data provided by the topic can be found [here](vehicle_dynamics.md).
 
 ### Object detection
 
@@ -49,10 +49,6 @@ You can get the inference results by subscribing to the eCAL topic `object_detec
 Using the front camera of the test vehicle, an AI model predicts the class ID of traffic signs.
 
 You can get the inference results by subscribing to the eCAL topic `traffic_sign_detection`. More infomration on the data provided by the topic can be found [here](traffic_sign_detection.md).
-
-### Radar sensor data
-
-TODO!
 
 ## Connectivity Path
 
@@ -72,16 +68,27 @@ The following is provided inside the devcontainer:
 
 - Podman 4.9.3
 
-- Pre-configured Ankaios startup config [startupState.yaml](./config/startupState.yaml)
+- Pre-configured Ankaios startup config [shift2sdv_manifest.yaml](shift2sdv_manifest.yaml)
 
 - Automation scripts for starting and stopping all workloads of the challenge:
     - run_shift2sdv.sh (TODO! must be created)
     - shutdown_shift2sdv.sh (TODO! must be created)
 
-- REST API providing [resource usage statistics](#resource-usage-statistics) for the sample scenario about intelligent orchestrator
+### Vehicle data for development
 
-- Exposed port:
-    - 25551: for optionally using the Ankaios CLI outside of the devcontainer
+Ask the Hack Coaches for eCAL test drive recordings to get real data for your application development. If a suitable recording is not available, the Hack Coaches can drive and record the explicit data you need.
+
+Once you have obtained an eCAL recording, place the downloaded folder containing the eCAL recording in a `measurements/` folder that `git` ignores.
+
+You can play it inside the devcontainer by running it:
+
+```shell
+ecal_play -m measurements/<ecal_recording_folder>
+```
+
+Start your application in another terminal window and check that it is receiving data.
+
+For debugging, it might help to run the eCAL Monitor terminal UI `ecal_mon_tui` application inside your containerized application (if you have the eCAL binaries installed). This interactive terminal UI would display all eCAL topics with their content and metadata. The eCAL Monitor is always helpful for debugging, because if it does not see any data, it is very likely that your application is not receiving any data.
 
 ## Run devcontainer with VSCode
 
