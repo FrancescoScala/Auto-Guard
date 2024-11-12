@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+
+podman build -t ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/example_app:rc1 /workspaces/shift2sdv/example_app/
+
+podman build -t ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/symphony_provider:rc1 /workspaces/shift2sdv/symphony_provider/

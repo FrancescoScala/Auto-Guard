@@ -12,7 +12,7 @@
 
 # SPDX-License-Identifier: Apache-2.0
 
-FROM ghcr.io/eclipse-ankaios/app-ankaios-dev:0.5.0-rc1 AS dev
+FROM ghcr.io/eclipse-ankaios/app-ankaios-dev:0.5.0-rc2 AS dev
 ARG TARGETARCH
 ARG USERNAME=ankaios
 
@@ -40,6 +40,9 @@ RUN echo 'export ANK_INSECURE=true' | tee -a /home/${USERNAME}/.bashrc /home/${U
 # add my favorite convinence aliases
 RUN echo 'alias ..="cd .."' | tee -a /home/${USERNAME}/.bashrc /home/${USERNAME}/.zshrc
 RUN echo 'alias ...="cd ../.."' | tee -a /home/${USERNAME}/.bashrc /home/${USERNAME}/.zshrc
+
+# add scripts dir to path
+RUN echo 'export PATH=$PATH:/workspaces/shift2sdv/scripts' | tee -a /home/${USERNAME}/.bashrc /home/${USERNAME}/.zshrc
 
 # Trust all repositories in this container
 RUN git config --global --add safe.directory '*' \
