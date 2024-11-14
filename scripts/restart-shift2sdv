@@ -3,6 +3,6 @@ set -e
 
 build-apps
 
-stop-demo
+stop-shift2sdv
 
-start-demo
+start-shift2sdv
