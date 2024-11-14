@@ -16,21 +16,23 @@ For usage outside of the devcontainer as containerized application:
 podman build -t web_ivi:latest -f .devcontainer/Dockerfile .
 ```
 
-**Note:** Inside the test-vehicle the Web IVI will run on ARM-Platform. Test the build by running the command above and ask the hack coaches to build your finished image to run inside the test vehicle.
+**Note:** Inside the test-vehicle the Web IVI will run on ARM-Platform. Test the build by running the command above and ask the hack coaches to build your image for ARM to run it inside the test vehicle.
 
 ## Run
 
-Start the Web IVI as containerized application:
+In the test vehicle the Web IVI container image will be started and managed by Eclipse Ankaios. Finally, it will be displayed on a separate display within the test vehicle. So, please make sure the `podman build` and the run of the container will work after you have adapted the code. Per default the workload is not listed in the [Ankaios manifest](../shift2sdv_manifest.yaml) and it is not started inside the test vehicle.
 
-```shell
-podman run -it --rm --ipc=host --pid=host --network=host web_ivi:latest
+Add the workload configuration next to the other workloads inside the [Ankaios manifest](../shift2sdv_manifest.yaml) to let Ankaios start the Web IVI inside the vehicle. Inform the hack coaches to build the image for multi-platform before a test drive:
+
+```yaml
+  web_ivi:
+    runtime: podman
+    agent: hpc2
+    restartPolicy: NEVER
+    runtimeConfig: |
+      image: web_ivi:latest
+      commandOptions: [ "--net=host" ]
 ```
-
-Open the Google Chrome browser on `http://127.0.0.1:5500`.
-
-**Note:** The app was tested on Google Chrome browser. Other browsers might not work.
-
-In the test vehicle the Web IVI container image will be started and managed by Eclipse Ankaios. Finally, it will be displayed on a separate display within the test vehicle. So, please make sure the `podman build` and `podman run` command above will work after you have adapted the code.
 
 ## Development
 
@@ -43,6 +45,8 @@ uvicorn main:app --port 5500 --reload
 ```
 
 Open the Google Chrome browser on `http://127.0.0.1:5500`.
+
+**Note:** The app was tested on Google Chrome browser. Other browsers might not work.
 
 ### Testing with mock data
 

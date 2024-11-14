@@ -42,13 +42,17 @@ Subscribe to the eCAL topic `vehicle_dynamics` within your custom application to
 
 Using the front camera of the test vehicle, an AI model runs object detection.
 
-You can get the inference results by subscribing to the eCAL topic `object_detection`. More infomration on the data provided by the topic can be found [here](object_detection.md).
+You can get the inference results by subscribing to the eCAL topic `object_detection`. More information on the data provided by the topic can be found [here](object_detection.md).
 
 ### Traffic sign detection
 
 Using the front camera of the test vehicle, an AI model predicts the class ID of traffic signs.
 
-You can get the inference results by subscribing to the eCAL topic `traffic_sign_detection`. More infomration on the data provided by the topic can be found [here](traffic_sign_detection.md).
+You can get the inference results by subscribing to the eCAL topic `traffic_sign_detection`. More information on the data provided by the topic can be found [here](traffic_sign_detection.md).
+
+### Web IVI
+
+If you need an IVI to display information to the driver inside the test vehicle, there is one already prepared that can be extended. By default it is comment out inside the Ankaios manifest [shift2sdv_manifest.yaml](shift2sdv_manifest.yaml) and not started. See [here](web_ivi/README.md) for more information.
 
 ## Connectivity Path
 
