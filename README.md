@@ -18,7 +18,7 @@ The container is designed to have an immediately running environment combined wi
 
 # Challenge
 
-The challenge is to turn an ordinary vehicle into an innovation platform. To achive this two paths are available to the participants: the "Feature Path" and the "Connectivity Path". Both paths have different targets, yet combined showcase what a full-blown software-defined vehicle is capable of.
+The challenge is to turn an ordinary vehicle into an innovation platform. To achieve this, two paths are available to the participants: the "Feature Path" and the "Connectivity Path". Both paths have different targets, yet combined showcase what a full-blown software-defined vehicle is capable of.
 
 The following diagram shows the context view of the two paths:
 
@@ -70,9 +70,12 @@ The following is provided inside the devcontainer:
 
 - Pre-configured Ankaios startup config [shift2sdv_manifest.yaml](shift2sdv_manifest.yaml)
 
-- Automation scripts for starting and stopping all workloads of the challenge:
-    - run_shift2sdv.sh (TODO! must be created)
-    - shutdown_shift2sdv.sh (TODO! must be created)
+- Automation scripts (located in [scripts](/scripts)) for starting and stopping the demo of the challenge and debugging the developed applications. The development scripts are already added to the execution path of the devcontainer can be called from anywhere within the container:
+    - [`restart-shift2sdv`](/scripts/restart-shift2sdv) builds all containers with the `build-apps` script, cleans up the system with `stop-shift2sdv` and starts everything again with `start-shift2sdv` 
+    - [`build-apps`](/scripts/build-apps) triggers the Podman build of the developed during the hackathon applications. This is the place where you can add your build commands when adding additional apps
+    - [`stop-shift2sdv`](/scripts/stop-shift2sdv) cleans up the system by stopping Ankaios, cleaning up **all** Podman containers and cleaning up temporary files created for the Ankaios control interface
+    - [`start-shift2sdv`](/scripts/start-shift2sdv) starts an Ankaios cluster with two agents ("hpc1" and "hpc2") and [shift2sdv_manifest.yaml](/shift2sdv_manifest.yaml) as a startup configuration
+    - [`ank-logs`](/scripts/ank-logs) a wrapper around `podman logs` that helps you get the logs of a container using the ankaios workload name, e.g., `ank-logs symphony_provider`
 
 ### Vehicle data for development
 
