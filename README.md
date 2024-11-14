@@ -72,7 +72,7 @@ The following is provided inside the devcontainer:
 
 - Automation scripts (located in [scripts](/scripts)) for starting and stopping the demo of the challenge and debugging the developed applications. The development scripts are already added to the execution path of the devcontainer can be called from anywhere within the container:
     - [`restart-shift2sdv`](/scripts/restart-shift2sdv) builds all containers with the `build-apps` script, cleans up the system with `stop-shift2sdv` and starts everything again with `start-shift2sdv` 
-    - [`build-apps`](/scripts/build-apps) triggers the Podman build of the developed during the hackathon applications. This is the place where you can add your build commands when adding additional apps
+    - [`build-apps`](/scripts/build-apps) triggers the Podman build of the developed during the hackathon applications. Just put your app in the [apps](/apps) folder to get it build too
     - [`stop-shift2sdv`](/scripts/stop-shift2sdv) cleans up the system by stopping Ankaios, cleaning up **all** Podman containers and cleaning up temporary files created for the Ankaios control interface
     - [`start-shift2sdv`](/scripts/start-shift2sdv) starts an Ankaios cluster with two agents ("hpc1" and "hpc2") and [shift2sdv_manifest.yaml](/shift2sdv_manifest.yaml) as a startup configuration
     - [`ank-logs`](/scripts/ank-logs) a wrapper around `podman logs` that helps you get the logs of a container using the ankaios workload name, e.g., `ank-logs symphony_provider`
@@ -134,28 +134,40 @@ Start the devcontainer with the required mount points:
 docker run -it --privileged --name shift2sdv-dev -v <absolute/path/to>/challenge-shift-to-sdv:/workspaces/shift2sdv -p 25551:25551 --workdir /workspaces/shift2sdv shift2sdv-dev:0.1 /bin/bash
 ```
 
-## Container logs
+## Adding a new application
 
-Use the [podman logs](https://docs.podman.io/en/v4.6.1/markdown/podman-logs.1.html) command to check the logs of your container applications for debugging purposes.
+To add your new shiny application, just create a new folder under [apps](/apps) and add a Dockerfile that specifies the build and containerization steps. To get an easy start you can just copy one of the examples there and update it as you please :rocket:
 
-```shell
-podman ps -a
-podman logs -f <container_name|container_id>
+The `build-apps` script is already configured to automatically build all apps located in the [apps](/apps).
+
+For the application to also be executed by Ankaios a configuration for it must either be:
+* added to the initial startup manifest [shift2sdv_manifest.yaml](shift2sdv_manifest.yaml) or
+* dynamically added during runtime via the control interface using the [Ankaios Python SDK](https://pypi.org/project/ankaios-sdk/)
+
+You now only have to add your mighty code in :sparkler:
+
+## Debugging your application
+
+Although all new code is always perfect :sunglasses:, from time to time some debugging is quite helpful :nerd_face: 
+
+The following steps will give you some directions how to get your hands on some useful logs:
+
+### Getting the logs of your application
+
+Truing out your application even before containerizing it is always the better choice, but sometimes you need to get some logs from the application running in the container. Podman already delivers strong tooling for this and to spare ourselves even more time, we wrapped the `podman logs` commands in a small script, which allows us to use the Ankaios workload name to get the logs:
+
+```bash
+ank-logs <your_app_name>
 ```
 
-## Ankaios logs
+The command automatically follows the logs so can get some :popcorn: and enjoy the show. If you get tired of it, you can always interrupt the follow with a `crtl + C`.
 
-There are log files for debugging purposes of Ankaios server and agent.
+### Getting Ankaios logs
 
-The Ankaios server logs can be viewed by executing the following command:
+If you need some logs from Ankaios go get even deeper insights into the cluster you can have a look in the .logs folder or follow the logs with the `tail -f <path to log>` command.
 
-```shell
-tail -f /var/log/ankaios-server.log
-```
-
-The Ankaios agent logs can be viewed by executing the following command:
-
-```shell
-tail -f /var/log/ankaios-agent_A.log
-```
+The following logs will be written by Ankaios:
+* ank-server
+* ank-agent-hpc1
+* ank-agent-hpc2
 
