@@ -34,6 +34,8 @@ def callback(topic_name, msg, time):
         logger.error(f"Error: {e}")
 
 if __name__ == "__main__":
+    logger.info("Starting example app...")
+    
     # Initialize eCAL
     ecal_core.initialize(sys.argv, "Example App")
 
