@@ -20,21 +20,13 @@ podman build -t web_ivi:latest .
 
 **Note:** Inside the test-vehicle the Web IVI will run on ARM-Platform. Test the build by running the command above and ask the hack coaches to build your image for ARM to run it inside the test vehicle.
 
-## Run
+## Running
 
-In the test vehicle the Web IVI container image will be started and managed by Eclipse Ankaios. Finally, it will be displayed on a separate display within the test vehicle. So, please make sure the `podman build` and the run of the container will work after you have adapted the code. Per default the workload is not listed in the [Ankaios manifest](../shift2sdv_manifest.yaml) and it is not started inside the test vehicle.
+The Web IVI is automatically started by Ankaios as there is an entry for it in the [shift2sdv_manifest.yaml](shift2sdv_manifest.yaml).
 
-Add the workload configuration next to the other workloads inside the [Ankaios manifest](../shift2sdv_manifest.yaml) to let Ankaios start the Web IVI inside the vehicle. Inform the hack coaches to build the image for multi-platform before a test drive:
+In the test vehicle the Web IVI container image will be started and managed by Eclipse Ankaios. Finally, it will be displayed on a separate display within the test vehicle.
 
-```yaml
-  web_ivi:
-    runtime: podman
-    agent: hpc2
-    restartPolicy: NEVER
-    runtimeConfig: |
-      image: web_ivi:latest
-      commandOptions: [ "--net=host", "--ipc=host"]
-```
+Talk to the hack coaches to build a multi-platform or ARM image before trying to run the app in the vehicle.
 
 ## Development
 
@@ -73,5 +65,3 @@ ecal_mon_tui
 ```
 
 This lists all eCAL topics with their contents and meta information the host or container can see.
-
-**Note:**: To be able to receive eCAL topic data over shared memory for local development, please add manually `--ipc=host` to the podman `commandOption`.
