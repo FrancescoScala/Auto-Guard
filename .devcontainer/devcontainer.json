@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/rust
 {
-    "name": "Shift to SDV devcontainer",
+    "name": "shift2sdv",
     "build": {
         "dockerfile": "Dockerfile",
         "target": "dev"
@@ -10,6 +10,8 @@
    "runArgs": [
 	"--privileged"
    ],
+   // Auto forward the Web IVI port
+   "appPort": ["5500:5500"],
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
