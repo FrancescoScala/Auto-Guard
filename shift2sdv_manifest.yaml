@@ -11,12 +11,12 @@ workloads:
             - "*"
     restartPolicy: NEVER
     runtimeConfig: |
-      image: ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/symphony_provider:rc1
+      image: ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/symphony_provider:latest
       commandOptions: [ "--net=host", "-e", "VIN=42"]
   example_app:
     runtime: podman
     agent: hpc2
     restartPolicy: NEVER
     runtimeConfig: |
-      image: ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/example_app:rc1
+      image: ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/example_app:latest
       commandOptions: [ "--net=host", "-e", "VIN=42"]
