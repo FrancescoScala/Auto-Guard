@@ -1,4 +1,4 @@
-FROM docker.io/ubuntu:24.04 as dev
+FROM docker.io/ubuntu:24.04
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install \
@@ -15,8 +15,6 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 RUN PIP_BREAK_SYSTEM_PACKAGES=1 pip install \
     fastapi \
     uvicorn
-
-FROM dev as prod
 
 COPY main.py /web_ivi/main.py
 COPY static /web_ivi/static

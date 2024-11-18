@@ -100,8 +100,10 @@ async def vehicle_dynamics():
             if not vehicle_dynamics_queue.empty():
                 vehicle_dynamics_data = vehicle_dynamics_queue.get()
                 logger.info(vehicle_dynamics_data)
+                vehicle_dynamics_queue.task_done()
+                vehicle_dynamics_queue = Queue()
                 yield f"event: vehicle-dynamics\ndata: {vehicle_dynamics_data}\n\n"
-            await sleep(0.2)
+            await sleep(0.1)
 
         # Finalize eCAL API
         ecal_core.finalize()

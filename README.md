@@ -34,7 +34,7 @@ Data is delivered via eCAL topics that your application subscribes to.
 
 Subscribe to the eCAL topic `gps_data` within your custom application to receive live GPS data. More information about the data provided by the topic can be found [here](gnss_data.md).
 
-### Vehilce dynamics
+### Vehicle dynamics
 
 Subscribe to the eCAL topic `vehicle_dynamics` within your custom application to receive vehicle dynamics data from sensors such as speed, steering angle, and acceleration. More information about the data provided by the topic can be found [here](vehicle_dynamics.md).
 
@@ -76,7 +76,7 @@ The following is provided inside the devcontainer:
 
 - Automation scripts (located in [scripts](/scripts)) for starting and stopping the demo of the challenge and debugging the developed applications. The development scripts are already added to the execution path of the devcontainer can be called from anywhere within the container:
     - [`restart-shift2sdv`](/scripts/restart-shift2sdv) builds all containers with the `build-apps` script, cleans up the system with `stop-shift2sdv` and starts everything again with `start-shift2sdv` 
-    - [`build-apps`](/scripts/build-apps) triggers the Podman build of the developed during the hackathon applications. Just put your app in the [apps](/apps) folder to get it build too
+    - [`build-apps`](/scripts/build-apps) triggers the Podman build of the developed hackathon applications. Just put your app in the [apps](/apps) folder to get it build too
     - [`stop-shift2sdv`](/scripts/stop-shift2sdv) cleans up the system by stopping Ankaios, cleaning up **all** Podman containers and cleaning up temporary files created for the Ankaios control interface
     - [`start-shift2sdv`](/scripts/start-shift2sdv) starts an Ankaios cluster with two agents ("hpc1" and "hpc2") and [shift2sdv_manifest.yaml](/shift2sdv_manifest.yaml) as a startup configuration
     - [`ank-logs`](/scripts/ank-logs) a wrapper around `podman logs` that helps you get the logs of a container using the ankaios workload name, e.g., `ank-logs symphony_provider`
@@ -97,10 +97,10 @@ Start your application in another terminal window and check that it is receiving
 
 For debugging, it might help to run the eCAL Monitor terminal UI `ecal_mon_tui` application inside your containerized application (if you have the eCAL binaries installed). This interactive terminal UI would display all eCAL topics with their content and metadata. The eCAL Monitor is always helpful for debugging, because if it does not see any data, it is very likely that your application is not receiving any data.
 
-Debug your new application, assuming eCAL 5.12 is installed there (if you have already openend a shell inside your container, just skip this step):
+Debug your new application, assuming eCAL 5.12 is installed there (if you have already opened a shell inside your container, just skip this step):
 
 ```shell
-podman run -it --rm --ipc=host --pid=host --network=host --entrypoint /bin/bash <your_container_image> ecal_mon_tui
+podman run -it --rm --ipc=host --net=host --entrypoint /bin/bash <your_container_image> ecal_mon_tui
 ```
 
 Start the eCAL Monitor terminal UI:
@@ -108,6 +108,8 @@ Start the eCAL Monitor terminal UI:
 ```shell
 ecal_mon_tui
 ```
+
+**Note:** Make sure to start the podman container receiving eCAL topic data with `--ipc=host`.
 
 ## Run devcontainer with VSCode
 
@@ -164,7 +166,7 @@ Truing out your application even before containerizing it is always the better c
 ank-logs <your_app_name>
 ```
 
-The command automatically follows the logs so can get some :popcorn: and enjoy the show. If you get tired of it, you can always interrupt the follow with a `crtl + C`.
+The command automatically follows the logs so can get some :popcorn: and enjoy the show. If you get tired of it, you can always interrupt the follow with a `ctrl + c`.
 
 ### Getting Ankaios logs
 

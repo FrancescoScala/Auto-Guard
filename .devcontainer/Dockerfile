@@ -47,3 +47,7 @@ RUN echo 'export PATH=$PATH:/workspaces/shift2sdv/scripts' | tee -a /home/${USER
 # Trust all repositories in this container
 RUN git config --global --add safe.directory '*' \
     && echo "if [ -f /etc/bash_completion ] && ! shopt -oq posix; then\n . /etc/bash_completion \nfi" >> /root/.bashrc
+
+RUN PIP_BREAK_SYSTEM_PACKAGES=1 pip install \
+    fastapi \
+    uvicorn

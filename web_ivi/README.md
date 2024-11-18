@@ -6,14 +6,14 @@ The Demo Web IVI is a simple web application showing a three column layout with 
 
 By default, the web backend receives vehicle dynamics data via the eCAL topic `vehicle_dynamics` (JSON) once a client browser connects to `http://127.0.0.1:5500`. The web backend passes the vehicle dynamics JSON to the client via [SSE (Server Side Event)](https://en.wikipedia.org/wiki/Server-sent_events). It extracts the current vehicle speed value `signals.speedDisplayed` from the JSON message and displays it within the speedometer. For simplicity, the torque-speed relationship is simulated within code.
 
-The `div` with the id `info-screen` in `static/index.html` can be used to display custom information to the driver. Feel free to append data to it. If this does not suit your needs, you can also customise the whole Web IVI. Feel also free to extract and display any other relevant data from the vehicle dynamics JSON data.
+The `div` with the id `info-screen` in `static/index.html` can be used to display custom information to the driver. Feel free to append data to it. If this does not suit your needs, you can also customize the whole Web IVI. Feel also free to extract and display any other relevant data from the vehicle dynamics JSON data.
 
 ## Build
 
 For usage outside of the devcontainer as containerized application:
 
 ```shell
-podman build -t web_ivi:latest -f .devcontainer/Dockerfile .
+podman build -t web_ivi:latest .
 ```
 
 **Note:** Inside the test-vehicle the Web IVI will run on ARM-Platform. Test the build by running the command above and ask the hack coaches to build your image for ARM to run it inside the test vehicle.
@@ -71,3 +71,5 @@ ecal_mon_tui
 ```
 
 This lists all eCAL topics with their contents and meta information the host or container can see.
+
+**Note:**: To be able to receive eCAL topic data over shared memory for local development, please add manually `--ipc=host` to the podman `commandOption`.
