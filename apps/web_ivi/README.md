@@ -6,11 +6,13 @@ The Demo Web IVI is a simple web application showing a three column layout with 
 
 By default, the web backend receives vehicle dynamics data via the eCAL topic `vehicle_dynamics` (JSON) once a client browser connects to `http://127.0.0.1:5500`. The web backend passes the vehicle dynamics JSON to the client via [SSE (Server Side Event)](https://en.wikipedia.org/wiki/Server-sent_events). It extracts the current vehicle speed value `signals.speedDisplayed` from the JSON message and displays it within the speedometer. For simplicity, the torque-speed relationship is simulated within code.
 
-The `div` with the id `info-screen` in `static/index.html` can be used to display custom information to the driver. Feel free to append data to it. If this does not suit your needs, you can also customize the whole Web IVI. Feel also free to extract and display any other relevant data from the vehicle dynamics JSON data.
+The `div` with the id `info-screen` in `static/index.html` can be used to display custom information to the driver. Feel free to append data to it. If this does not suit your needs, you can also customize the whole Web IVI. Feel also free to extract and display any other relevant data from the `vehicle_dynamics` JSON data.
 
 ## Build
 
-For usage outside of the devcontainer as containerized application:
+When running `restart-shift2sdv`, or explicitly the `build-apps` script, the Web IVI will be build and containerized automatically as `ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/web_ivi:latest`.
+
+Of course, you are free to build manually if needed by calling the following command from the web_ivi folder:
 
 ```shell
 podman build -t web_ivi:latest .
@@ -31,7 +33,7 @@ Add the workload configuration next to the other workloads inside the [Ankaios m
     restartPolicy: NEVER
     runtimeConfig: |
       image: web_ivi:latest
-      commandOptions: [ "--net=host" ]
+      commandOptions: [ "--net=host", "--ipc=host"]
 ```
 
 ## Development
