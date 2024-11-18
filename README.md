@@ -1,8 +1,12 @@
 # Forget the conventional - Shift to SDV
 
-This repository provides a starter template for solving the Forget the conventional - Shift to SDV challenge using the [Ankaios](https://github.com/eclipse-ankaios/ankaios) workload orchestrator.
+This repository provides a starter template for solving the "Forget the conventional - Shift to SDV" challenge using the following Eclipse SDV projects:
+* [Ankaios](https://eclipse-ankaios.github.io/ankaios/latest/) - an embedded container and workload orchestrator targeted at automotive HPCs
+* [eCAL](https://ecal.io/) – a fast communication middleware following the pub-sub principle
+* [Symphony](https://github.com/eclipse-symphony/symphony/tree/main/docs) – a meta-orchestrator helping you manage your fleet from the cloud
+* [Ankaios Dashboard](https://github.com/FelixMoelders/ankaios-dashboard) – a graphical user interface for the Ankaios orchestrator
 
-It contains a pre-configured devcontainer that makes it easy for you to start developing and building container applications managed by Ankaios.
+The repo contains a pre-configured devcontainer that makes it easy for you to start developing and building container applications managed by Ankaios.
 
 The container is designed to have an immediately running environment combined with a development environment for Ankaios workloads. Once triggered, all workloads are initially started and sample data is output.
 
@@ -60,11 +64,12 @@ Manage your fleet from the cloud turning feature upgrades into a seamless day-to
 
 The connectivity path enables over-the-air updates and upgrades.
 
-To enable this, write a Symphony provider application that receives an Ankaios manifest via the Eclipse Symphony meta-orchestrator running on Azure. The provider receives the new Ankaios manifest from the cloud and forwards the Ankaios manifest to Ankaios, which deploys all of the manifest's workloads. Workloads are updated over-the-air by simply changing the image version of the containers to point to a different version of the application.
+To enable this, write a [Symphony Provider application](apps/symphony_provider) that receives an Ankaios manifest via the Eclipse Symphony meta-orchestrator running on Azure. The received from the cloud manifest can be forwarded to Ankaios, which deploys all of the manifest's workloads. Running workloads are updated over-the-air by simply changing the image version of the containers to point to a different version of the application. 
+New workloads listed in the manifest can upgrade the vehicle and add additional functionality.
 
-... TODO!
+The Symphony Provider can also be used to monitor the state of the Ankaios cluster and with this of the vehicle and report it to the cloud for auditing and debugging purposes.
 
-## Development environment
+# Development environment
 
 The following is provided inside the devcontainer:
 
@@ -81,7 +86,7 @@ The following is provided inside the devcontainer:
     - [`start-shift2sdv`](/scripts/start-shift2sdv) starts an Ankaios cluster with two agents ("hpc1" and "hpc2") and [shift2sdv_manifest.yaml](/shift2sdv_manifest.yaml) as a startup configuration
     - [`ank-logs`](/scripts/ank-logs) a wrapper around `podman logs` that helps you get the logs of a container using the ankaios workload name, e.g., `ank-logs symphony_provider`
 
-### Vehicle data for development
+## Vehicle data for development
 
 Ask the Hack Coaches for eCAL test drive recordings to get real data for your application development. If a suitable recording is not available, the Hack Coaches can drive and record the explicit data you need.
 
@@ -140,13 +145,13 @@ Start the devcontainer with the required mount points:
 docker run -it --privileged --name shift2sdv-dev -v <absolute/path/to>/challenge-shift-to-sdv:/workspaces/shift2sdv -p 25551:25551 --workdir /workspaces/shift2sdv shift2sdv-dev:0.1 /bin/bash
 ```
 
-## Adding a new application
+# Adding a new application
 
-To add your new shiny application, just create a new folder under [apps](/apps) and add a Dockerfile that specifies the build and containerization steps. To get an easy start you can just copy one of the examples there and update it as you please :rocket:
+To add your new shiny application, just create a new folder under [apps](/apps) and add a Dockerfile that specifies the build and containerization steps. For an easy start you can also just copy one of the examples there and update it as you please :rocket:
 
 The `build-apps` script is already configured to automatically build all apps located in the [apps](/apps).
 
-For the application to also be executed by Ankaios a configuration for it must either be:
+For the application to also be executed by Ankaios, a configuration for it must either be:
 * added to the initial startup manifest [shift2sdv_manifest.yaml](shift2sdv_manifest.yaml) or
 * dynamically added during runtime via the control interface using the [Ankaios Python SDK](https://pypi.org/project/ankaios-sdk/)
 
@@ -160,20 +165,19 @@ The following steps will give you some directions how to get your hands on some 
 
 ### Getting the logs of your application
 
-Truing out your application even before containerizing it is always the better choice, but sometimes you need to get some logs from the application running in the container. Podman already delivers strong tooling for this and to spare ourselves even more time, we wrapped the `podman logs` commands in a small script, which allows us to use the Ankaios workload name to get the logs:
+Testing out your application even before containerizing it is always the better choice, but sometimes you need to get some logs from the application running in the container. Podman already delivers strong tooling for this and to spare ourselves even more time, we wrapped the `podman logs` commands in a small script, which allows us to use the Ankaios workload name to get the logs by just calling:
 
 ```bash
 ank-logs <your_app_name>
 ```
 
-The command automatically follows the logs so can get some :popcorn: and enjoy the show. If you get tired of it, you can always interrupt the follow with a `ctrl + c`.
+The command automatically follows the logs so you can get some :popcorn: and enjoy the show. If you get tired of it, you can always interrupt following the logs with a `ctrl + C`.
 
 ### Getting Ankaios logs
 
-If you need some logs from Ankaios go get even deeper insights into the cluster you can have a look in the .logs folder or follow the logs with the `tail -f <path to log>` command.
+If you need some logs from Ankaios to get even deeper insights into the cluster, you can have a look in the `.logs` folder or follow the logs with the `tail -f <path to log>` command.
 
-The following logs will be written by Ankaios:
+The following logs will be written by Ankaios in the `.logs` folder of the main repo:
 * ank-server
 * ank-agent-hpc1
 * ank-agent-hpc2
-
