@@ -21,15 +21,6 @@ The inference results are provided in the eCAL topic `object_detection` as JSON 
             564.3827514648438,  // x2
             479.19677734375     // y2
         ]
-    ],
-    // Boxes in [x, y, width, height] format
-    "xywh": [
-        [
-            353.0321350097656,  // x center of bounding box
-            330.67205810546875, // y center of bounding box
-            422.70123291015625, // width
-            297.0494384765625   // height
-        ]
     ]
 }
 ```
