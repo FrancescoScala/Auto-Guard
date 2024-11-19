@@ -35,12 +35,12 @@ def callback(topic_name, msg, time):
 
 if __name__ == "__main__":
     logger.info("Starting example app...")
-    
+
     # Initialize eCAL
     ecal_core.initialize(sys.argv, "Example App")
 
     # Create a subscriber that listens on the "traffic_sign_detection"
-    sub = StringSubscriber("traffic_sign_detection")
+    sub = StringSubscriber("vehicle_dynamics")
 
     # Set the Callback
     sub.set_callback(callback)

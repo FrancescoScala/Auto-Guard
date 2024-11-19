@@ -1,17 +1,14 @@
-FROM docker.io/ubuntu:24.04
+FROM ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/ecal_base:5.12
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install \
-    software-properties-common \
-    python3 \
-    python3-pip \
     protobuf-compiler \
     net-tools \
-    # install eCAL
-    && add-apt-repository ppa:ecal/ecal-5.12 \
-    && apt-get install -y python3-ecal5 \
+    # add your packages here
     # Cleanup
     && rm -rf /var/lib/apt/lists/*
+
+COPY ecal.ini /etc/ecal/
 
 COPY requirements.txt ./
 RUN pip install --break-system-packages --no-cache-dir -r requirements.txt
