@@ -8,18 +8,18 @@
   <link rel="stylesheet" href="{{ url_for('static', filename="css/report.css") }}">
 </head>
 <body>
-<h1 class="text-center">Report {{ id }}</h1>
+<h1 class="text-center">Report {{ report.ID }}</h1>
 <div class="container">
   <div class="row justify-content-center">
-    {% set asset_id = (id % 3) + 1 %}
+    {% set asset_id = (report.ID % 3) + 1 %}
     {% set image_name = "images/car-crash-" + (asset_id|string) + ".webp" %}
     <div class="col-md-8 col-lg-6">
       <div class="card shadow">
         <img src="{{ url_for('static', filename=image_name) }}" class="card-img-top"
              alt="Random Image of Crash">
         <div class="card-body">
-          <h5 class="card-title">Report {{ id }}</h5>
-          <p class="card-text">Report pushed at ***</p>
+          <h5 class="card-title">Report {{ report.ID }}</h5>
+          <p class="card-text">Report pushed at {{ report.REPORT_DATE }}</p>
         </div>
       </div>
     </div>

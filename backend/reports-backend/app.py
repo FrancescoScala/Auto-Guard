@@ -27,13 +27,16 @@ def add_report():
 
 @app.route("/reports", methods=['GET'])
 def show_reports():
-    return render_template('reports.html', reports=repo.list())
+    repo = ReportRepo()
+    reports = repo.list()
+    return render_template('reports.html', reports=reports)
 
 
 @app.route("/reports/<int:report_id>", methods=['GET'])
 def show_report(report_id: int):
-    report = repo.list()[report_id]
-    return render_template('report.html', report=report, id=report_id)
+    repo = ReportRepo()
+    report = repo.get(report_id)
+    return render_template('report.html', report=report)
 
 
 if __name__ == '__main__':

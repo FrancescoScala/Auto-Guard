@@ -12,17 +12,17 @@
 <h1 class="text-center my-4">Reports</h1>
 <div class="container">
   <div class="row">
-    {% for id, report in reports.items() %}
-      {% set asset_id = (id % 3) + 1 %}
+    {% for report in reports %}
+      {% set asset_id = (report.ID % 3) + 1 %}
       {% set image_name = "images/car-crash-" + (asset_id|string) + ".webp" %}
       <div class="col-md-3 col-sm-4 mb-4">
         <div class="card shadow" style="width: 18rem;">
           <img src="{{ url_for('static', filename=image_name) }}" class="card-img-top"
                alt="Random Image of Crash">
           <div class="card-body">
-            <h5 class="card-title">Report {{ id }}</h5>
-            <p class="card-text">Report pushed at ***</p>
-            <a href="/reports/{{ id }}" class="btn btn-primary">Check Report</a>
+            <h5 class="card-title">Report {{ report.ID }}</h5>
+            <p class="card-text">Report pushed at {{ report.REPORT_DATE }}</p>
+            <a href="/reports/{{ report.ID }}" class="btn btn-primary">Check Report</a>
           </div>
         </div>
       </div>
