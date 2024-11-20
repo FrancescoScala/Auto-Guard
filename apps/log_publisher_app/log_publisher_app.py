@@ -1,11 +1,11 @@
 import sys, time, json, logging
 
 import ecal.core.core as ecal_core
+import requests
 from ecal.core.subscriber import StringSubscriber
-
 from enum import Enum
 from signals import Signals, parse_signals
-
+from report_dto import ReportDTO
 from collections import deque
 
 logger = logging.getLogger("Log Publisher App")
@@ -22,6 +22,16 @@ if the speed change from 50 to 10 in small amount of time.
 
 collection of records
 '''
+
+def push_reportdto(report):
+     # Serialize the report to JSON 
+    report_json = json.dumps(report, default=lambda o: o.__dict__, indent=4)
+    print(report_json)
+    # TODO: think about how to set the uri
+    url = "http://example.com/api/report"
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(url, headers=headers, data=report_json)
+    print(response.status_code, response.text)
 
 class CriticalLevel(Enum):
     LOW_LEVEL = 0
@@ -58,13 +68,13 @@ class LogPublisherApp(object):
         # Just don't exit
         while ecal_core.ok():
             time.sleep(0.5)
-        
 
     # Callback for receiving messages
     def callback(self, topic_name, msg, time):
         try:
             # json_msg = json.loads(msg)
             signal_schema: Signals = parse_signals(msg)
+            self.signals_list.append(signal_schema)
             # print(f"Received: {msg}")
             # Detect acceleration and set emergency brake flag
             long_acc = signal_schema.longAcc
@@ -84,6 +94,18 @@ class LogPublisherApp(object):
                         self.emergency_brake = True
 
                 print(f"speed diff is {speed_diff} and critical level is {critical_level}")
+
+            if self.emergency_brake:
+                report = ReportDTO(
+                    schema_version="1.0",
+                    vehicle_id="XYZ123", 
+                    start_timestamp=self.prev_timestamp, 
+                    stop_timestamp=timestamp, 
+                    criticality_level=critical_level, 
+                    vehicle_dynamics=self.signals_list
+                )
+                
+                push_reportdto(report)
 
             print(f"Emergency Brake: {self.emergency_brake}")
 
