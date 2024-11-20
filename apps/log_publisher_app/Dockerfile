@@ -13,8 +13,6 @@ COPY ecal.ini /etc/ecal/
 COPY requirements.txt ./
 RUN pip install --break-system-packages --no-cache-dir -r requirements.txt
 
-COPY log_publisher_app.py ./
-
-COPY signals.py ./
+COPY . ./
 
 CMD [ "python3", "-u", "./log_publisher_app.py" ]
