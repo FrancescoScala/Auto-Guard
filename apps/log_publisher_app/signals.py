@@ -18,6 +18,24 @@ class Signals:
     timeSinceLastClick: float
     wheelSteeringAngleFront: float
     wheelSteeringAngleRear: float
+    
+    def to_dict(self):
+        return {
+            'vehicle_id': self.vehicle_id,
+            'timestamp': self.timestamp,
+            'speed': self.speed,
+            'speedDisplayed': self.speedDisplayed,
+            'speedPerWheel': self.speedPerWheel,
+            'longAcc': self.longAcc,
+            'latAcc': self.latAcc,
+            'yawrate': self.yawrate,
+            'steeringWheelAngle': self.steeringWheelAngle,
+            'steeringWheelAngleSpeed': self.steeringWheelAngleSpeed,
+            'drvSteerTorque': self.drvSteerTorque,
+            'timeSinceLastClick': self.timeSinceLastClick,
+            'wheelSteeringAngleFront': self.wheelSteeringAngleFront,
+            'wheelSteeringAngleRear': self.wheelSteeringAngleRear
+        }
 
 
 def parse_signals(json_data, vehicle_id=1):
