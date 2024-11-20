@@ -18,3 +18,10 @@ measurements/
 # logs
 .logs
 .idea
+
+# venv
+venv
+
+# measurements
+*.zip
+measurements

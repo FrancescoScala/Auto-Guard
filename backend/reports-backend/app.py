@@ -1,8 +1,9 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
+
 from report import ReportRepo
 import json
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="templates/assets")
 
 
 
@@ -24,5 +25,16 @@ def add_report():
     return "OK"
 
 
+@app.route("/reports", methods=['GET'])
+def show_reports():
+    return render_template('reports.html', reports=repo.list())
+
+
+@app.route("/reports/<int:report_id>", methods=['GET'])
+def show_report(report_id: int):
+    report = repo.list()[report_id]
+    return render_template('report.html', report=report, id=report_id)
+
+
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port= 6002, debug=True)
+    app.run(debug=True)
