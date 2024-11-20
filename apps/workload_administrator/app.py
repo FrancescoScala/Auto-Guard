@@ -3,7 +3,7 @@ import paho.mqtt.client as mqtt
 from ankaios_sdk import Ankaios, Manifest, UpdateStateSuccess, Workload
 
 # env vars
-NAME: str = "workload_starter"
+NAME: str = "workload_administrator"
 VEHICLE_ID: str = os.environ.get("VIN")
 MQTT_BROKER_ADDR: str = os.environ.get('MQTT_BROKER_ADDR')
 MQTT_BROKER_PORT: int = int(os.environ.get('MQTT_BROKER_PORT'))
