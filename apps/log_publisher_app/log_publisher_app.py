@@ -23,119 +23,84 @@ if the speed change from 50 to 10 in small amount of time.
 collection of records
 '''
 
-def push_reportdto(report):
-    # Serialize the report to JSON 
-    # report_json = json.dumps(report, default=lambda o: dict(o) if isinstance(o, type(report).__dict__) else o.__dict__, indent=4)
-    report_json = json.dumps(report.to_dict())
-    print('report', report_json)
-    # TODO: think about how to set the uri
-    url = "http://example.com/api/report"
-    headers = {"Content-Type": "application/json"}
-    response = requests.post(url, headers=headers, data=report_json)
-    print(response.status_code, response.text)
-
-
-
 class LogPublisherApp(object):
-    def __init__(self):
-        # Create a subscriber that listens on the "traffic_sign_detection"
-        self.sub = StringSubscriber("vehicle_dynamics")
-        self.prev_long_acc = 0
-        self.prev_lat_acc = 0
-        self.emergency_brake = False
-        self.prev_timestamp = 0
-        self.speed_threshold = 10 # threshold for the speed
-        self.criticial_speed_thresholds = {
-            20: 1,
-            30: 2,
-            40: 3
-            }
-        self.previous_speed = 100
-        self.signals_list = deque(maxlen=50)
+    criticial_speed_thresholds = {20: 1, 30: 2, 40: 3}
+    vehicle_dynamics_samples = deque(maxlen=50)
 
         
     def run(self):
+        vehicle_dynamics_sub = StringSubscriber("vehicle_dynamics")
+        vehicle_dynamics_sub.set_callback(self.vehicle_dynamics_callback)
+
         # object_detection_sub = StringSubscriber("object_detection") # to detect the construction site sign
-
-        # Set the Callback
-        self.sub.set_callback(self.callback)
-
         # object_detection_sub.set_callback(object_detection_callback)
         
-        # Just don't exit
         while ecal_core.ok():
             time.sleep(0.5)
 
-    # Callback for receiving messages
-    def callback(self, topic_name, msg, time):
-        try:
-            signal_schema: Signals = parse_signals(msg)
-            self.signals_list.append(signal_schema)
-            # print(f"Received: {msg}")
-            # Detect acceleration and set emergency brake flag
-            long_acc = signal_schema.longAcc
-            timestamp = signal_schema.timestamp
-            speed = signal_schema.speed
-            # if (long_acc - self.prev_long_acc) < 0: # means it is decelerating
-            #     self.emergency_brake = True
-            #     print("emegency brake because of long acc")
+    def publish_report(self, critical_level, timestamp):
+        report = ReportDTO(
+            schema_version="1.0",
+            vehicle_id="XYZ123", 
+            stop_timestamp=timestamp, 
+            criticality_level=critical_level, 
+            vehicle_dynamics=self.vehicle_dynamics_samples
+        )
+        
+        report_json = json.dumps(report.to_dict())
+        logger.info('report', report_json)
+        url = "http://example.com/api/report"
+        headers = {"Content-Type": "application/json"}
+        response = requests.post(url, headers=headers, data=report_json)
+        logger.info(response.status_code, response.text)
 
-            if speed < self.previous_speed:
-                speed_diff = abs(speed - self.previous_speed)
-                critical_level = 0
+    # Callback for receiving vehicle_dynamics messages
+    def vehicle_dynamics_callback(self, topic_name, msg, time):
+        def add_signal():
+            signal_schema: Signals = parse_signals(msg)
+            self.vehicle_dynamics_samples.append(signal_schema)
+
+        def detect_trigger() -> int:
+            curr_signal = self.vehicle_dynamics_samples[-1]
+            last_signal = self.vehicle_dynamics_samples[-2]
+
+            if curr_signal.speed < last_signal.speed:
+                speed_diff = last_signal.speed - curr_signal.speed
 
                 for key, value in self.criticial_speed_thresholds.items():
                     if speed_diff > key:
-                        critical_level = value
-                        self.emergency_brake = True
+                        return value
+                return 0
 
-                print(f"speed diff is {speed_diff} and critical level is {critical_level}")
-
-            if self.emergency_brake:
-                report = ReportDTO(
-                    schema_version="1.0",
-                    vehicle_id="XYZ123", 
-                    start_timestamp=self.prev_timestamp, 
-                    stop_timestamp=timestamp, 
-                    criticality_level=critical_level, 
-                    vehicle_dynamics=self.signals_list
-                )
-                
-                push_reportdto(report)
-
-            print(f"Emergency Brake: {self.emergency_brake}")
-
-            self.prev_long_acc = long_acc
-            print(f"timestamp difference: {timestamp-self.prev_timestamp}")
-            self.prev_timestamp = timestamp
-
-            self.previous_speed = speed
-            self.emergency_brake = False # reset
+        try:
+            add_signal()
+            critical_level = detect_trigger()
+            if critical_level > 0:
+                self.publish_report(critical_level, time)
 
         except json.JSONDecodeError:
             logger.error(f"Error: Could not decode message: '{msg}'")
         except Exception as e:
             logger.error(f"Error: {e}")
 
+
 # def object_detection_callback(topic_name, msg, time):
 #     try:
 #         json_msg = json.loads(msg)
-#         print(f"Received Object Detection: {msg}")
+#         logger.info(f"Received Object Detection: {msg}")
 #     except json.JSONDecodeError:
 #         logger.error(f"Error: Could not decode message: '{msg}'")
 #     except Exception as e:
 #         logger.error(f"Error: {e}")
 
 def main():
+    logger.info("Starting Log Publisher App")
+    ecal_core.initialize(sys.argv, "Log Publisher App")
     log_publisher_app = LogPublisherApp()
     log_publisher_app.run()
+    ecal_core.finalize()
+
 
 if __name__ == "__main__":
     # main()
-    logger.info("Starting Log Publisher App")
-
-    # Initialize eCAL
-    ecal_core.initialize(sys.argv, "Log Publisher App")
     main()
-    # finalize eCAL API
-    ecal_core.finalize()
