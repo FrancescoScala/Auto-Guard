@@ -25,7 +25,10 @@ def send_status(client: mqtt.Client, ret: UpdateStateSuccess, key: str) -> None:
         return
     logger.debug(json.dumps(ret.to_dict()))
     created_workloads: list[str] = [wl["workload_name"] for wl in ret.to_dict()[key]]
-    message: str = f"Workloads {', '.join(created_workloads)} {key.split('_')[0]}"
+    if created_workloads:
+        message: str = f"Workloads {', '.join(created_workloads)} {key.split('_')[0]}"
+    else:
+        message: str = f"No workloads {key.split('_')[0]}"
     logger.info(message)
     client.publish(f"{BASE_TOPIC}/status", message)
 
