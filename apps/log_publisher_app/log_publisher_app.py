@@ -24,19 +24,16 @@ collection of records
 '''
 
 def push_reportdto(report):
-     # Serialize the report to JSON 
-    report_json = json.dumps(report, default=lambda o: o.__dict__, indent=4)
-    print(report_json)
+    # Serialize the report to JSON 
+    # report_json = json.dumps(report, default=lambda o: dict(o) if isinstance(o, type(report).__dict__) else o.__dict__, indent=4)
+    report_json = json.dumps(report.to_dict())
+    print('report', report_json)
     # TODO: think about how to set the uri
     url = "http://example.com/api/report"
     headers = {"Content-Type": "application/json"}
     response = requests.post(url, headers=headers, data=report_json)
     print(response.status_code, response.text)
 
-class CriticalLevel(Enum):
-    LOW_LEVEL = 0
-    MID_LEVEL = 1
-    HIGH_LEVEL = 2
 
 
 class LogPublisherApp(object):
@@ -49,9 +46,9 @@ class LogPublisherApp(object):
         self.prev_timestamp = 0
         self.speed_threshold = 10 # threshold for the speed
         self.criticial_speed_thresholds = {
-            20: CriticalLevel.LOW_LEVEL,
-            30: CriticalLevel.MID_LEVEL,
-            40: CriticalLevel.HIGH_LEVEL
+            20: 1,
+            30: 2,
+            40: 3
             }
         self.previous_speed = 100
         self.signals_list = deque(maxlen=50)
@@ -72,7 +69,6 @@ class LogPublisherApp(object):
     # Callback for receiving messages
     def callback(self, topic_name, msg, time):
         try:
-            # json_msg = json.loads(msg)
             signal_schema: Signals = parse_signals(msg)
             self.signals_list.append(signal_schema)
             # print(f"Received: {msg}")
@@ -86,7 +82,7 @@ class LogPublisherApp(object):
 
             if speed < self.previous_speed:
                 speed_diff = abs(speed - self.previous_speed)
-                critical_level = None
+                critical_level = 0
 
                 for key, value in self.criticial_speed_thresholds.items():
                     if speed_diff > key:
