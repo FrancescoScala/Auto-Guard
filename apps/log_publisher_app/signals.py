@@ -25,7 +25,7 @@ def parse_signals(json_data, vehicle_id=1):
     signals_data = data["signals"]
     return Signals(
         vehicle_id=vehicle_id,
-        timestamp=data["header"]["timestamp"],
+        timestamp=int(data["header"]["timestamp"]),
         speed=signals_data["speed"],
         speedDisplayed=signals_data["speedDisplayed"],
         speedPerWheel=signals_data["speedPerWheel"],
