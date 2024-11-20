@@ -1,7 +1,8 @@
 import sys, time, logging, os, json, socket, ssl
 import paho.mqtt.client as mqtt
-from ankaios_sdk import Workload, Ankaios, WorkloadStateEnum, WorkloadSubStateEnum, AnkaiosLogLevel, Manifest, Request, CompleteState, UpdateStateSuccess
+from ankaios_sdk import Ankaios, Manifest, UpdateStateSuccess, Workload
 
+# env vars
 NAME: str = "workload_starter"
 VEHICLE_ID: str = os.environ.get("VIN")
 MQTT_BROKER_ADDR: str = os.environ.get('MQTT_BROKER_ADDR')
@@ -10,6 +11,7 @@ MQTT_BROKER_USER: str = os.environ.get('MQTT_BROKER_USER')
 MQTT_BROKER_PASS: str = os.environ.get('MQTT_BROKER_PASS')
 BASE_TOPIC: str = f"/vehicle/{VEHICLE_ID}"
 
+# logging
 logger: logging.Logger = logging.getLogger(NAME)
 stdout: logging.StreamHandler = logging.StreamHandler(stream=sys.stdout)
 formatter: logging.Formatter = logging.Formatter('%(asctime)s.%(msecs)03d - %(levelname)s - %(message)s', datefmt='%d.%m.%Y %H:%M:%S')
@@ -18,39 +20,62 @@ stdout.setLevel(logging.INFO)
 logger.addHandler(stdout)
 logger.setLevel(logging.INFO)
 
+def send_status(client: mqtt.Client, ret: UpdateStateSuccess, key: str) -> None:
+    if ret is None:
+        return
+    logger.debug(json.dumps(ret.to_dict()))
+    created_workloads: list[str] = [wl["workload_name"] for wl in ret.to_dict()[key]]
+    message: str = f"Workloads {', '.join(created_workloads)} {key.split('_')[0]}"
+    logger.info(message)
+    client.publish(f"{BASE_TOPIC}/status", message)
+
 def run(mqtt_client: mqtt.Client) -> None:
     with Ankaios() as ankaios:
 
         # Callback when the client receives a CONNACK response from the MQTT server
         def on_connect(client, userdata, flags, reason_code, properties):
-            for topic in ["start", "stop"]:
+            for topic in ["manifest/apply", "manifest/delete", "workload/start", "workload/stop"]:
                 client.subscribe(f"{BASE_TOPIC}/{topic}")
                 logger.info(f"Subscribed to {BASE_TOPIC}/{topic}")
 
         # Callback when a PUBLISH message is received from the MQTT server
         def on_message(client, userdata, msg):
             try:
-                logger.info(f"Received message on topic {msg.topic}")
-                # Handle request for applying a manifest
-                if msg.topic == f"{BASE_TOPIC}/start":
+                logger.debug(f"Received message on topic {msg.topic}")
+
+                # handle manifest request
+                if msg.topic.startswith(f"{BASE_TOPIC}/manifest/"):
+                    # apply
                     manifest: Manifest = Manifest.from_string(str(msg.payload.decode()))
                     workload_list: list = list(manifest._manifest['workloads'].keys())
-                    logger.info(f"starting workloads {', '.join(workload_list)}")
-                    ret: UpdateStateSuccess = ankaios.apply_manifest(manifest)
-                    if ret is not None:
-                        client.publish(f"{BASE_TOPIC}/status", json.dumps(ret.to_dict()))
-                        created_workloads: list = [wl["workload_name"] for wl in ret.to_dict()['added_workloads']]
-                        logger.info(f"workloads {', '.join(created_workloads)} started")
-                # Handle request for deleting a manifest
-                elif msg.topic == f"{BASE_TOPIC}/stop":
-                    manifest: Manifest = Manifest.from_string(str(msg.payload.decode()))
-                    workload_list: list = list(manifest._manifest['workloads'].keys())
-                    logger.info(f"stopping workloads {', '.join(workload_list)}")
-                    ret: UpdateStateSuccess = ankaios.delete_manifest(manifest)
-                    if ret is not None:
-                        client.publish(f"{BASE_TOPIC}/status", json.dumps(ret.to_dict()))
-                        deleted_workloads: list = [wl["workload_name"] for wl in ret.to_dict()['deleted_workloads']]
-                        logger.info(f"workloads {', '.join(deleted_workloads)} stopped")
+                    if msg.topic == f"{BASE_TOPIC}/manifest/apply":
+                        logger.info(f"starting workloads {', '.join(workload_list)}")
+                        ret: UpdateStateSuccess = ankaios.apply_manifest(manifest)
+                        send_status(client, ret, 'added_workloads')
+
+                    # delete
+                    elif msg.topic == f"{BASE_TOPIC}/manifest/delete":
+                        logger.info(f"stopping workloads {', '.join(workload_list)}")
+                        ret: UpdateStateSuccess = ankaios.delete_manifest(manifest)
+                        send_status(client, ret, 'deleted_workloads')
+
+                # handle workload requests
+                elif msg.topic.startswith(f"{BASE_TOPIC}/workload/"):
+                    payload: str = str(msg.payload.decode())
+                    # start
+                    if msg.topic == f"{BASE_TOPIC}/workload/start":
+                        details: dict = json.loads(payload)
+                        workload: Workload = Workload(details["name"])
+                        workload.update_agent_name(details["agent"])
+                        workload.update_restart_policy(details["restart_policy"].upper())
+                        workload.update_runtime_config(f"image: {details['image']}\ncommandOptions: {json.dumps(details['options'])}")
+                        workload.update_runtime("podman")
+                        ret: UpdateStateSuccess = ankaios.apply_workload(workload)
+                        send_status(client, ret, 'added_workloads')
+                    # stop
+                    if msg.topic == f"{BASE_TOPIC}/workload/stop":
+                        ret: UpdateStateSuccess = ankaios.delete_workload(payload)
+                        send_status(client, ret, 'deleted_workloads')
             except Exception as e:
                 logger.error(f"Error processing message: {e}")
 
