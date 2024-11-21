@@ -12,7 +12,7 @@ def LabelImages(video_path_val):
 
     # Load YOLOv8 model from PyTorch Hub with trust_repo parameter
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s', trust_repo=True)
-    result_dir = 'result/'+video_path.split('.')[0]
+    result_dir = 'templates/assets/result/'+video_path.split('.')[0]
     os.makedirs(result_dir, exist_ok=True)
 
     # # Initialize video capture

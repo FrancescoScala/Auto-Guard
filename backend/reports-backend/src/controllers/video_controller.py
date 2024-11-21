@@ -17,7 +17,7 @@ def init_video_controller(app: Flask):
 
     @app.route('/result/<filename>', methods=['GET'])
     def show_results(filename):
-        image_files = os.listdir('result/' + filename)
+        image_files = os.listdir('templates/assets/result/' + filename)
         return render_template('results.html', image_files=image_files, filename=filename)
 
     @app.route('/videos/<filename>')

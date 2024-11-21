@@ -1,1 +1,4 @@
 report_db.sqlite3
+videos
+templates/assets/result
+yolov5s.pt
