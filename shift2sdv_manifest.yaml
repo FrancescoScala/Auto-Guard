@@ -27,7 +27,18 @@ workloads:
     runtimeConfig: |
       image: ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/web_ivi:latest
       commandOptions: [ "--net=host", "--ipc=host"]
+<<<<<<< HEAD
   workload_administrator:
+=======
+  log_publisher_app:
+    runtime: podman
+    agent: hpc2
+    restartPolicy: NEVER
+    runtimeConfig: |
+      image: ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/log_publisher_app:latest
+      commandOptions: [ "--net=host", "--ipc=host"]
+  workload_starter:
+>>>>>>> 5e74ced (feat: add ankaios resource for log_publisher_app)
     runtime: podman
     agent: hpc1
     restartPolicy: NEVER
