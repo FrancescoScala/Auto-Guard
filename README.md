@@ -54,11 +54,23 @@ The `Workload Administrator` connects to an MQTT broker hosted in the Cloud to r
 The `Workload Administrator` is started by Ankaios at the start of the vehicle.
 
 ### Log Publisher App
-This is an example workload which is available in this repository. The log publisher app subscribes to the topic `eCAL measurment` to revieve dynamic vehicle sensor data to detect an emergency break event (trigger). It then communicates with the `Reporting REST API` to submit recorded sensor data in case of a trigger event detection.
+This is an example workload which is available in this repository. The log publisher app subscribes 
+to the topic `eCAL measurment` to retrieve dynamic vehicle sensor data to detect an emergency break 
+event (trigger). It then communicates with the `Reporting REST API` to submit recorded sensor data 
+in case of a trigger event detection.    
 The `Log Publisher App` is not started during the vehicle start but is created remotely.
 
 ### Synthetic Data Generator
-The `Synthetic Data Geneator` is reponsible for artificially producing dynamic vehicle sensor data to create an emergency breaking scenario. It publishes its sensor data via eCAL to the topic `eCAL measurement`. The synthetic data can be used to test and validate the trigger event detection logic in the `Log Publisher App`. In the real test vehicle setup this component is replaced by in-vehicle components publishing real sensor data to this very topic. 
+The `Synthetic Data Generator` is reponsible for artificially producing dynamic vehicle sensor data 
+to create an emergency breaking scenario. It publishes its sensor data via eCAL to the topic `eCAL measurement`. 
+The synthetic data can be used to test and validate the trigger event detection logic in the `Log Publisher App`. 
+In the real test vehicle setup this component is replaced by in-vehicle components publishing real 
+sensor data to this very topic. 
+
+### Reporting API
+The reporting API is our Cloud Application that will be used to both receive the reports 
+(they'll be posted at `POST /api/reports`) and to visualize them in a user-friendly UI at `/reports`.
+
 
 # Installation
 
