@@ -27,10 +27,10 @@ workloads:
     runtimeConfig: |
       image: ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/web_ivi:latest
       commandOptions: [ "--net=host", "--ipc=host"]
-  log_publisher_app:
-    runtime: podman
-    agent: hpc2
-    restartPolicy: NEVER
-    runtimeConfig: |
-      image: ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/log_publisher_app:latest
-      commandOptions: [ "--net=host", "--ipc=host", "-e", "THRESHOLD_VALUE=2.25"]
+#  log_publisher_app:
+#    runtime: podman
+#    agent: hpc2
+#    restartPolicy: NEVER
+#    runtimeConfig: |
+#      image: ghcr.io/eclipse-sdv-hackathon-chapter-two/shift2sdv/log_publisher_app:latest
+#      commandOptions: [ "--net=host", "--ipc=host", "-e", "THRESHOLD_VALUE=24", "-e", "VEHICLE_ID=XYZ123"]

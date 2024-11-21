@@ -54,7 +54,6 @@ Start the Ankaios cluster using:
 ```shell
 scripts/restart_shift2sdv
 ```
-The provided `scripts/restart_shift2sdv.sh` has been modified to show the `log_publisher_app` logs.
 
 ## Use synthetic data
 

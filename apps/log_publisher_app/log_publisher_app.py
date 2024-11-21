@@ -26,22 +26,18 @@ collection of records
 class LogPublisherApp(object):
     executor = ThreadPoolExecutor(max_workers=5)
     test_val = float(os.getenv("THRESHOLD_VALUE", 40))
-    criticial_speed_thresholds = {20: 1, 30: 2, test_val: 3}
+    vehicle_id = os.getenv("VEHICLE_ID", "123456")
+    critical_speed_thresholds = {test_val: 1, 30: 2, 40: 3}
     vehicle_dynamics_samples = deque(maxlen=50)
-
     reports = deque()
 
     def __init__(self):
         self.executor.submit(self.publish_reports)
-
         
     def run(self):
         vehicle_dynamics_sub = StringSubscriber("vehicle_dynamics_synthetic")
         vehicle_dynamics_sub.set_callback(self.vehicle_dynamics_callback)
 
-        # object_detection_sub = StringSubscriber("object_detection") # to detect the construction site sign
-        # object_detection_sub.set_callback(object_detection_callback)
-        
         while ecal_core.ok():
             time.sleep(0.5)
 
@@ -61,16 +57,14 @@ class LogPublisherApp(object):
         report_json = json.dumps(report.to_dict())
         url = "http://172.16.1.41:5010/api/reports"
         headers = {"Content-Type": "application/json"}
-        response = requests.post(url, headers=headers, data=report_json)
+        requests.post(url, headers=headers, data=report_json)
         print("sent")
-
 
     # Callback for receiving vehicle_dynamics messages
     def vehicle_dynamics_callback(self, topic_name, msg, time):
         def add_signal():
             signal_schema: Signals = parse_signals(msg)
             self.vehicle_dynamics_samples.append(signal_schema)
-            # print([sample.speed for sample in self.vehicle_dynamics_samples])
 
         def detect_trigger() -> int:
             if len(self.vehicle_dynamics_samples) < 50:
@@ -81,9 +75,9 @@ class LogPublisherApp(object):
 
                 if curr_signal.speed < last_signal.speed:
                     speed_diff = last_signal.speed - curr_signal.speed
-                    print(f"Speed diff: {speed_diff}")
-                    for key, value in self.criticial_speed_thresholds.items():
+                    for key, value in self.critical_speed_thresholds.items():
                         if speed_diff >= key:
+                            print(f"Critical speed diff: {speed_diff}")
                             return value
                 return 0
 
@@ -93,12 +87,13 @@ class LogPublisherApp(object):
             if critical_level > 0:
                 report = ReportDTO(
                     schema_version="1.0",
-                    vehicle_id="XYZ123",
+                    vehicle_id=self.vehicle_id,
                     stop_timestamp=time,
                     criticality_level=critical_level,
                     vehicle_dynamics=self.vehicle_dynamics_samples
                 )
                 self.reports.append(report)
+                self.vehicle_dynamics_samples.clear()
 
         except json.JSONDecodeError:
             logger.error(f"Error: Could not decode message: '{msg}'")
