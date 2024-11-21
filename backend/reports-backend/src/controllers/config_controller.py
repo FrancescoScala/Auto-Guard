@@ -2,11 +2,11 @@ import json
 
 from flask import Flask, request, jsonify, render_template, redirect, url_for
 
-import src.mqtt_client as mqtt_client
 import src.repos.config_repo as config_repo
+from src.mqtt_client import MqttClient
 
 
-def init_config_controller(app: Flask):
+def init_config_controller(app: Flask, mqtt_client: MqttClient):
     @app.route('/api/configs', methods=['GET'])
     def list_configs():
         return jsonify(config_repo.list())
