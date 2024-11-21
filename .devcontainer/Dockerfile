@@ -12,44 +12,50 @@
 
 # SPDX-License-Identifier: Apache-2.0
 
-FROM ghcr.io/eclipse-ankaios/app-ankaios-dev:0.4.1 AS dev
+FROM ghcr.io/eclipse-ankaios/app-ankaios-dev:0.5.0 AS dev
 ARG TARGETARCH
+ARG USERNAME=ankaios
 
-RUN apt-get update && apt-get -y install \
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install \
+    software-properties-common \
     git \
     jq \
     python3 \
     python3-pip \
-    # eCAL dependencies
-    libc6 \
-    libcurl4 \
-    libgcc-s1 \
-    libhdf5-103 \
-    libprotobuf23 \
-    libqt5core5a \
-    libqt5gui5 \
-    libqt5widgets5 \
-    libqt5svg5 \
-    libstdc++6 \
-    sysstat \
-    ifstat \
-    libqwt-qt5-6 \
-    libyaml-cpp0.7 \
     mosquitto-clients \
     # Add your development tools here ...
-    # Cleanup
-    && rm -rf /var/lib/apt/lists/* \
     && curl -sL https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${TARGETARCH} -o /usr/bin/yq \
-    && chmod +x /usr/bin/yq
-
-# install eCAL
-RUN curl -sL https://github.com/eclipse-ecal/ecal/releases/download/v5.11.3/ecal_5.11.3-jammy_amd64.deb -o /tmp/ecal.dep \
-    && dpkg -i /tmp/ecal.dep \
-    && curl -sL https://github.com/eclipse-ecal/ecal/releases/download/v5.11.3/ecal5-5.11.3-1jammy-cp310-cp310-linux_x86_64.whl -o /tmp/ecal5-5.11.3-1jammy-cp310-cp310-linux_x86_64.whl \
-    && pip3 install --no-cache-dir /tmp/ecal5-5.11.3-1jammy-cp310-cp310-linux_x86_64.whl \
+    && chmod +x /usr/bin/yq \
+    # install eCAL
+    && add-apt-repository ppa:ecal/ecal-5.12 \
+    && apt-get install -y python3-ecal5 \
     # Cleanup
-    && rm -rf /tmp/ecal.dep /tmp/ecal5-5.11.3-1jammy-cp310-cp310-linux_x86_64.whl
+    && rm -rf /var/lib/apt/lists/*
+
+# work in insecure mode in the dev container
+RUN echo 'export ANKAGENT_INSECURE=true' | tee -a /home/${USERNAME}/.bashrc /home/${USERNAME}/.zshrc
+RUN echo 'export ANKSERVER_INSECURE=true' | tee -a /home/${USERNAME}/.bashrc /home/${USERNAME}/.zshrc
+RUN echo 'export ANK_INSECURE=true' | tee -a /home/${USERNAME}/.bashrc /home/${USERNAME}/.zshrc
+
+# add my favorite convinence aliases
+RUN echo 'alias ..="cd .."' | tee -a /home/${USERNAME}/.bashrc /home/${USERNAME}/.zshrc
+RUN echo 'alias ...="cd ../.."' | tee -a /home/${USERNAME}/.bashrc /home/${USERNAME}/.zshrc
+
+# add scripts dir to path
+RUN echo 'export PATH=$PATH:/workspaces/shift2sdv/scripts' | tee -a /home/${USERNAME}/.bashrc /home/${USERNAME}/.zshrc
 
 # Trust all repositories in this container
 RUN git config --global --add safe.directory '*' \
     && echo "if [ -f /etc/bash_completion ] && ! shopt -oq posix; then\n . /etc/bash_completion \nfi" >> /root/.bashrc
+
+# install manifest-tool
+RUN curl -fsSL https://github.com/estesp/manifest-tool/releases/download/v2.1.8/binaries-manifest-tool-2.1.8.tar.gz | tar xz -C /usr/local/bin/
+RUN if [ "$(uname -m)" = "x86_64" ]; then \
+        ln -s /usr/local/bin/manifest-tool-linux-amd64 /usr/local/bin/manifest-tool; \
+    elif [ "$(uname -m)" = "aarch64" ]; then \
+        ln -s $/usr/local/bin/manifest-tool-linux-arm64 /usr/local/bin/manifest-tool; \
+    else \
+        echo "Unsupported architecture"; \
+        exit 1; \
+    fi

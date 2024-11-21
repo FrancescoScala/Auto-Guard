@@ -6,10 +6,15 @@
         "dockerfile": "Dockerfile",
         "target": "dev"
     },
-   "mounts": [],
+	"mounts": [
+		"source=${localEnv:HOME}/.docker,target=/home/ankaios/.docker,type=bind,consistency=cached"
+	],
    "runArgs": [
 	"--privileged"
    ],
+   "features": {
+	"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+   },
    "appPort": ["25551:25551"],
 	// Configure tool-specific properties.
 	"customizations": {
@@ -28,5 +33,6 @@
 		}
 	},
    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/shift2sdv/,type=bind",
-   "workspaceFolder": "/workspaces/shift2sdv/"
+   "workspaceFolder": "/workspaces/shift2sdv/",
+   "remoteUser": "ankaios"
 }
