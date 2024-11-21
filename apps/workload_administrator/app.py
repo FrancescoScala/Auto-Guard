@@ -21,7 +21,7 @@ stdout.setLevel(logging.INFO)
 logger.addHandler(stdout)
 logger.setLevel(logging.INFO)
 
-def send_status(client: mqtt.Client, ret: UpdateStateSuccess, key: str) -> None:
+def send_workload_change(client: mqtt.Client, ret: UpdateStateSuccess, key: str) -> None:
     if ret is None:
         return
     logger.debug(json.dumps(ret.to_dict()))
@@ -31,7 +31,11 @@ def send_status(client: mqtt.Client, ret: UpdateStateSuccess, key: str) -> None:
     else:
         message: str = f"No workloads {key.split('_')[0]}"
     logger.info(message)
-    client.publish(f"{BASE_TOPIC}/status", message)
+    client.publish(f"{BASE_TOPIC}/change", message)
+
+def send_workload_state(client: mqtt.Client, messages: list[str]) -> None:
+    logger.info("current status:\n\t" + "\n\t".join(messages))
+    client.publish(f"{BASE_TOPIC}/status", "\n".join(messages))
 
 def run(mqtt_client: mqtt.Client) -> None:
     with Ankaios() as ankaios:
@@ -57,13 +61,13 @@ def run(mqtt_client: mqtt.Client) -> None:
                     if msg.topic in [f"{BASE_TOPIC}/manifest/apply", f"{ALL_BASE_TOPIC}/manifest/apply"]:
                         logger.info(f"starting workloads {', '.join(workload_list)}")
                         ret: UpdateStateSuccess = ankaios.apply_manifest(manifest)
-                        send_status(client, ret, 'added_workloads')
+                        send_workload_change(client, ret, 'added_workloads')
 
                     # delete
                     elif msg.topic in [f"{BASE_TOPIC}/manifest/delete", f"{ALL_BASE_TOPIC}/manifest/delete"]:
                         logger.info(f"stopping workloads {', '.join(workload_list)}")
                         ret: UpdateStateSuccess = ankaios.delete_manifest(manifest)
-                        send_status(client, ret, 'deleted_workloads')
+                        send_workload_change(client, ret, 'deleted_workloads')
 
                 # handle workload requests
                 elif msg.topic.startswith(f"{BASE_TOPIC}/workload/") or msg.topic.startswith(f"{ALL_BASE_TOPIC}/workload/"):
@@ -77,11 +81,11 @@ def run(mqtt_client: mqtt.Client) -> None:
                         workload.update_runtime_config(f"image: {details['image']}\ncommandOptions: {json.dumps(details['options'])}")
                         workload.update_runtime("podman")
                         ret: UpdateStateSuccess = ankaios.apply_workload(workload)
-                        send_status(client, ret, 'added_workloads')
+                        send_workload_change(client, ret, 'added_workloads')
                     # stop
                     if msg.topic in [f"{BASE_TOPIC}/workload/stop", f"{ALL_BASE_TOPIC}/workload/stop"]:
                         ret: UpdateStateSuccess = ankaios.delete_workload(payload)
-                        send_status(client, ret, 'deleted_workloads')
+                        send_workload_change(client, ret, 'deleted_workloads')
             except Exception as e:
                 logger.error(f"Error processing message: {e}")
 
@@ -98,9 +102,11 @@ def run(mqtt_client: mqtt.Client) -> None:
 
         while True:
             states: dict = ankaios.get_state(field_masks=["workloadStates"]).to_dict()['workload_states']
+            messages: list[str] = []
             for agent, workload in states.items():
                 for workload_name, workload_details in workload.items():
-                    logger.info(f"{agent}: {workload_name} ({list(workload_details.values())[0]['substate']})")
+                    messages.append(f"{agent}: {workload_name} ({list(workload_details.values())[0]['substate']})")
+            send_workload_state(mqtt_client, messages)
             time.sleep(10)
 
 
