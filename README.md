@@ -20,9 +20,9 @@ The repository additionally uses the MQtt Broker service provided by:
 - [What are devcontainers?](https://containers.dev/)
 
 # Description
-This product enables SDV vehicle into connected car to detect user defined event and abnormal values produced by Sofware and deploy the software update via CI/CD.
-The example solution demonstrates the custom defined Emergency breaking event detection and immediately to the reporting system. The developer of the software retrieve
-the report with attached vehicle Data. It is expected that developer will analyze the report and fix the issues and bugs in the software.
+This product enables SDV vehicle into connected car to detect user defined event and abnormal values produced by Software and deploy the software update via CI/CD.
+The example solution demonstrates the custom defined Emergency breaking event detection and immediately to the reporting system. The developer retrieves
+the report with attached vehicle data. It is expected that developer will analyze the report and fix the issues and bugs in the software.
 
 
 
