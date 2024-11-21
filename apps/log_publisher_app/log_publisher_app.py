@@ -55,13 +55,13 @@ class LogPublisherApp(object):
 
     def publish_report(self, report):
         report_json = json.dumps(report.to_dict())
-        url = "http://172.16.1.41:5010/api/reports"
+        url = "http://<report_dashboard_uri>/api/reports"
         headers = {"Content-Type": "application/json"}
         requests.post(url, headers=headers, data=report_json)
         print("sent")
 
     # Callback for receiving vehicle_dynamics messages
-    def vehicle_dynamics_callback(self, topic_name, msg, time):
+    def vehicle_dynamics_callback(self, msg, time):
         def add_signal():
             signal_schema: Signals = parse_signals(msg)
             self.vehicle_dynamics_samples.append(signal_schema)

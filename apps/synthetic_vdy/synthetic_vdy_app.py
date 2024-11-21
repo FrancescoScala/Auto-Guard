@@ -58,11 +58,7 @@ class SyntheticDataGenerator():
 
 
 def create_message(current_speed, current_acceleration):
-    pass
 
-
-    # v = vo + a*t
-    # d = vo t + 0.5 * a*t*t  
     template_message = {
 	"header": {
 		"timestamp": f"{int(time.time_ns()/1000)}"
@@ -155,14 +151,12 @@ if __name__ == "__main__":
     sections.append(section4)    
 
     while ecal_core.ok():
-        print("Publishing message")
     # Create a message with a counter an publish it to the topic
         for sec in sections:
             for i in sec:
                 current_message = create_message(i[0], i[1])
-                print(current_message)
                 pub.send(json.dumps(current_message))
-                print("sent")
+                print(f"sent at {current_message['header']['timestamp']}")
                 time.sleep(0.1)
 
     # finalize eCAL API
