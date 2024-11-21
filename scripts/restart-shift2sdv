@@ -2,6 +2,6 @@
 set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-#$SCRIPT_DIR/build-apps
+$SCRIPT_DIR/build-apps
 $SCRIPT_DIR/stop-shift2sdv
 $SCRIPT_DIR/start-shift2sdv
