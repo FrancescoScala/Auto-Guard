@@ -44,5 +44,9 @@ The administrator workload runs connects to the MQtt message broker service host
 - stop workload
 
 ### Log Publisher App
-This is an example workload which is available in the repository. The log publisher app is subscribe topic `eCAL measurment` to revieve the sensor data related to 
+This is an example workload which is available in the repository. The log publisher app is subscribed to the topic `eCAL measurment` to revieve the sensor data for 
 vehical dynamics to detect Emergency breaking event and communicate with Reporting API to POST vehilce sensor.
+
+### Synthetic Data Generator
+The Synthetic Data Geneator is reponsible to produce mock data for vehicle dynamic to create emergency breaking scenario and it published to the topic `eCAL measurement`
+to test and validate whether the event detection logic in the log Publisher App. In the real test vehicle setup this is replaced by eCAL data logger which is publishing to this topic. 
