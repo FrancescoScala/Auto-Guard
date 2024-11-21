@@ -3,7 +3,6 @@ import sys, time, json, logging, os
 import ecal.core.core as ecal_core
 import requests
 from ecal.core.subscriber import StringSubscriber
-from enum import Enum
 from signals import Signals, parse_signals
 from report_dto import ReportDTO
 from collections import deque
@@ -35,9 +34,9 @@ class LogPublisherApp(object):
     def __init__(self):
         self.executor.submit(self.publish_reports)
 
-
+        
     def run(self):
-        vehicle_dynamics_sub = StringSubscriber("vehicle_dynamics")
+        vehicle_dynamics_sub = StringSubscriber("vehicle_dynamics_synthetic")
         vehicle_dynamics_sub.set_callback(self.vehicle_dynamics_callback)
 
         # object_detection_sub = StringSubscriber("object_detection") # to detect the construction site sign
@@ -77,12 +76,12 @@ class LogPublisherApp(object):
             if len(self.vehicle_dynamics_samples) < 50:
                 return 0
             else:
-                #TODO: extract method
                 curr_signal = self.vehicle_dynamics_samples[-1]
                 last_signal = self.vehicle_dynamics_samples[0]
 
                 if curr_signal.speed < last_signal.speed:
                     speed_diff = last_signal.speed - curr_signal.speed
+                    print(f"Speed diff: {speed_diff}")
                     for key, value in self.criticial_speed_thresholds.items():
                         if speed_diff >= key:
                             return value
@@ -115,5 +114,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # main()
     main()

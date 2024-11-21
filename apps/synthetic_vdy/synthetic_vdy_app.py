@@ -35,7 +35,7 @@ class SyntheticDataGenerator():
             self.current_speed = abs(self.current_speed + self.current_acceleration * 0.1)
 
         #print(self.current_speed, self.current_acceleration)
-        return tuple(self.current_speed, self.current_acceleration)
+        return [self.current_speed, self.current_acceleration]
 
 
     def emergency_breaking(self):
@@ -159,13 +159,17 @@ if __name__ == "__main__":
     sections.append(section4)    
 
     while ecal_core.ok():
+        print("Publishing message")
     # Create a message with a counter an publish it to the topic
         for sec in sections:
             for i in sec:
                 current_message = create_message(i[0], i[1])
+                print(current_message)
                 pub.send(json.dumps(current_message))
+                print("sent")
                 time.sleep(0.1)
 
-# finalize eCAL API
-ecal_core.finalize()
+    # finalize eCAL API
+    ecal_core.finalize()
+    sys.exit(0)
 
