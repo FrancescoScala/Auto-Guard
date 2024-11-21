@@ -20,9 +20,9 @@ The repository additionally uses the MQtt Broker service provided by:
 - [What are devcontainers?](https://containers.dev/)
 
 # Description
-This product enables SDV vehicle into connected car to detect user defined event and abnormal values produced by Software and deploy the software update via CI/CD.
-The example solution demonstrates the custom defined Emergency breaking event detection and immediately to the reporting system. The developer retrieves
-the report with attached vehicle data. It is expected that the developer will analyze the report and fix the issues and bugs in the software.
+This product enables a fleet manager or application developer to build and deploy multi-architecture containerized workloads via a CI/CD pipeline to either one vehicle or the entire fleet.
+The workload provided in this repository can detect predefined events and abnormal sensor values and report them to a cloud backend for a developer to evaluate and improve algorithms.
+the implemented example workload is set up to detect emergency breaking events and to create reports including attached vehicle data.
 
 
 
@@ -30,23 +30,27 @@ the report with attached vehicle data. It is expected that the developer will an
 
 ## Architecture
 
-The repository contains the following Ankios workload:
+The repository contains the following Ankaios workloads
 - Log Publisher App
 - Administrator workload
 
-### Administrator workload
+It also contains the developer tools
+- Synthetic Data Generator
+- CI/CD pipeline script
+and cloud the application
+- Reporting API (backend) including a web GUI
 
-The administrator workload runs connects to the MQtt message broker service hosted in the Cloud to recieve the deployment notification Workload. It communicates with the Ankios server to perform the following actions:
-- create workload
-- update workload
-- delete workload
-- start workload
-- stop workload
+### Workload Administrator
+
+The `Workload Administrator` connects to an MQTT broker hosted in the Cloud to recieve the deployment workload specification. It communicates with the Ankaios server over its control interface to perform the following actions on one of the HPCs:
+- start containerized workloads
+- update containerized workloads
+- delete containerized workloads
+The `Workload Administrator` is started by Ankaios at the start of the vehicle.
 
 ### Log Publisher App
-This is an example workload which is available in the repository. The log publisher app is subscribed to the topic `eCAL measurment` to revieve the sensor data for 
-vehical dynamics to detect Emergency breaking event and communicate with Reporting API to POST vehilce sensor.
+This is an example workload which is available in this repository. The log publisher app subscribes to the topic `eCAL measurment` to revieve dynamic vehicle sensor data to detect an emergency break event (trigger). It then communicates with the `Reporting REST API` to submit recorded sensor data in case of a trigger event detection.
+The `Log Publisher App` is not started during the vehicle start but is created remotely.
 
 ### Synthetic Data Generator
-The Synthetic Data Geneator is reponsible to produce mock data for vehicle dynamic to create emergency breaking scenario and it published to the topic `eCAL measurement`
-to test and validate whether the event detection logic in the log Publisher App. In the real test vehicle setup this is replaced by eCAL data logger which is publishing to this topic. 
+The `Synthetic Data Geneator` is reponsible for artificially producing dynamic vehicle sensor data to create an emergency breaking scenario. It publishes its sensor data via eCAL to the topic `eCAL measurement`. The synthetic data can be used to test and validate the trigger event detection logic in the `Log Publisher App`. In the real test vehicle setup this component is replaced by in-vehicle components publishing real sensor data to this very topic. 
