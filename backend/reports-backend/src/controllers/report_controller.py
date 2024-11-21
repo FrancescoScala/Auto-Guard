@@ -19,7 +19,7 @@ def init_report_routes(app: Flask):
     @app.route("/reports", methods=['GET'])
     def show_reports():
         reports = report_repo.list()
-        return render_template('reports.html', reports=reports, video_file=video_file)
+        return render_template('reports.html', reports=reports)
 
     @app.route("/reports/<int:report_id>", methods=['GET'])
     def show_report(report_id: int):
