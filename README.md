@@ -118,6 +118,9 @@ scripts/cicd-build-apps-multi-arch
 to rebuild and reupload the multi architecture container images to the container registry.
 
 ### Deploying the example application via MQTT
+Replace `REPORT_DASHBOARD_URI` value inside `scripts/cicd-last-step` using the reports dashboard address.
+If you are running the reports dashboard locally, you can specify the host's ip address.
+
 When done, you can deploy the `Log Publisher App` with
 ```shell
 scripts/cicd-last-step

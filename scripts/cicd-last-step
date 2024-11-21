@@ -13,7 +13,7 @@ workload=$(cat <<EOF
     "agent": "$device",
     "restart_policy": "never",
     "image": "$registry/$image_name:latest",
-    "options": ["--net=host", "--ipc=host", "-e", "THRESHOLD_VALUE=24", "-e", "VEHICLE_ID=XYZ123"]
+    "options": ["--net=host", "--ipc=host", "-e", "THRESHOLD_VALUE=24", "-e", "VEHICLE_ID=XYZ123", "-e", "REPORT_DASHBOARD_URI=<report_uri_dashboard>"]
 }
 EOF
 )

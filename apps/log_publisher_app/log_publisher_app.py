@@ -27,6 +27,7 @@ class LogPublisherApp(object):
     executor = ThreadPoolExecutor(max_workers=5)
     test_val = float(os.getenv("THRESHOLD_VALUE", 40))
     vehicle_id = os.getenv("VEHICLE_ID", "123456")
+    report_dashboard_uri = os.getenv("REPORT_DASHBOARD_URI", "<report_uri_dashboard>")
     critical_speed_thresholds = {test_val: 1, 30: 2, 40: 3}
     vehicle_dynamics_samples = deque(maxlen=50)
     reports = deque()
@@ -55,7 +56,7 @@ class LogPublisherApp(object):
 
     def publish_report(self, report):
         report_json = json.dumps(report.to_dict())
-        url = "http://<report_dashboard_uri>/api/reports"
+        url = f"http://{self.report_dashboard_uri}/api/reports"
         headers = {"Content-Type": "application/json"}
         requests.post(url, headers=headers, data=report_json)
         print("sent")
