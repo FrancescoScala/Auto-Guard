@@ -2,8 +2,14 @@ import os
 
 from flask import Flask, request, jsonify, render_template, send_from_directory
 
+from src.label_images import LabelImages
+
 
 def init_video_controller(app: Flask):
+    folder_path = "videos"
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
     @app.route('/videos', methods=['GET'])
     def show_videos():
         video_files = os.listdir('videos')
@@ -11,7 +17,7 @@ def init_video_controller(app: Flask):
 
     @app.route('/result/<filename>', methods=['GET'])
     def show_results(filename):
-        image_files = os.listdir('result/'+filename)
+        image_files = os.listdir('result/' + filename)
         return render_template('results.html', image_files=image_files, filename=filename)
 
     @app.route('/videos/<filename>')
@@ -20,8 +26,7 @@ def init_video_controller(app: Flask):
 
     @app.route('/get_image_dir/<filename>')
     def get_image_dir(filename):
-        return send_from_directory('templates/assets/result/'+filename, 'videos_results')
-
+        return send_from_directory('templates/assets/result/' + filename, 'videos_results')
 
     @app.route('/api/upload_video', methods=['POST'])
     def upload_video():
@@ -33,20 +38,6 @@ def init_video_controller(app: Flask):
         if file:
             filename = file.filename
             file.save(os.path.join('videos', filename))
+            LabelImages(filename)
             return "Video uploaded successfully", 200
-
-
-
-
-    @app.route('/api/start_post_process', methods=['POST'])
-    def start_post_process():
-        data = request.json
-        video = data.get('video')
-        if not video:
-            return jsonify({"error": "No video provided"}), 400
-        # Assuming there's a function in report_repo to handle post processing
-        # result = report_repo.start_post_process(video)
-        print('Post processing video:', video)
-        LabelImages(video)
-        return jsonify({"success": True, "video": video}), 200
 

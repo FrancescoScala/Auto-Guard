@@ -67,7 +67,6 @@
             <div class="video-container">
                 <p>{{ video }}</p>
                 <button class="download-button" onclick="downloadVideo('{{ video }}')">Download</button>
-                <button class="download-button" onclick="startPostProcess('{{ video }}')">Post Process Videos</button>
                 <button class="download-button" onclick="goToResults('{{ video }}')">Results</button>
             </div>
             {% endfor %}
@@ -78,27 +77,6 @@
     <script>
         function goToResults(video) {
             window.location.href = '/result/' + video.replace('.mp4', '');
-        }
-    </script>
-
-    <script>
-        function startPostProcess(video) {
-            console.log('Post processing video:', video);
-            alert('Post processing video: ' + video);
-            fetch('/api/start_post_process', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ video: video })
-            })
-            .then(response => response.json())
-            .then(data => {
-            console.log('Post process started:', data);
-            })
-            .catch(error => {
-            console.error('Error:', error);
-            });
         }
     </script>
 
