@@ -1,0 +1,17 @@
+{
+  "triggers": [
+    {
+      "name": "sudden-brake",
+      "conditions": [
+        "samples[0].velocity - samples[1].velocity > 40",
+        "samples[0].acceleration > 50"
+      ]
+    },
+    {
+      "name": "got-lost",
+      "conditions": [
+        "samples[0].location == \"I'm lost\""
+      ]
+    }
+  ]
+}
