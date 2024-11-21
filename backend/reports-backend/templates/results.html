@@ -143,19 +143,20 @@
         .dashboard {
             display: flex;
             flex-direction: column;
+            align-content: center;
             gap: 20px;
         }
     </style>
 </head>
 <body>
     <!-- Sidebar -->
-    <div class="sidebar">
+    <!-- <div class="sidebar">
         <h2>Dashboard</h2>
         <a href="#">Home</a>
         <a href="#">Results</a>
         <a href="#">Settings</a>
         <a href="#">Help</a>
-    </div>
+    </div> -->
 
     <!-- Main content -->
     <div class="dashboard">
@@ -168,13 +169,23 @@
             <div class="slideshow-container">
                 {% for image in image_files %}
                     <div class="mySlides fade">
-                        <img src="{{ url_for('static', filename='result/' + image) }}" alt="Result Image">
+                        <img src="{{ url_for('static', filename='result/' + filename + '/' + image) }}" alt="Result Image">
                     </div>
                 {% endfor %}
                 <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
                 <a class="next" onclick="plusSlides(1)">&#10095;</a>
             </div>
+            
+            <button class="header" onclick="downloadReport()">Download Report</button>
 
+            <script>
+                function downloadReport() {
+                    const link = document.createElement('a');
+                    link.href = "{{ url_for('static', filename='result/' + filename + '/results.json') }}";
+                    link.download = 'results.json';
+                    link.click();
+                }
+            </script>
             
         </main>
     </div>

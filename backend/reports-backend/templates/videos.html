@@ -68,7 +68,7 @@
                 <p>{{ video }}</p>
                 <button class="download-button" onclick="downloadVideo('{{ video }}')">Download</button>
                 <button class="download-button" onclick="startPostProcess('{{ video }}')">Post Process Videos</button>
-                <button class="download-button" onclick="goToResults()">Go to Results</button>
+                <button class="download-button" onclick="goToResults('{{ video }}')">Results</button>
             </div>
             {% endfor %}
         </div>
@@ -76,8 +76,8 @@
     
 
     <script>
-        function goToResults() {
-            window.location.href = '/result';
+        function goToResults(video) {
+            window.location.href = '/result/' + video.replace('.mp4', '');
         }
     </script>
 

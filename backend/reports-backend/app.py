@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify, render_template, send_from_directory
 import os
 
 import src.report as report_repo
+from label_images import LabelImages
 
 app = Flask(__name__, static_folder="templates/assets")
 
@@ -17,14 +18,18 @@ def show_videos():
     video_files = os.listdir('videos')
     return render_template('videos.html', video_files=video_files, mimetype='video/mp4')
 
-@app.route('/result', methods=['GET'])
-def show_results():
-    image_files = os.listdir('result')
-    return render_template('results.html', image_files=image_files)
+@app.route('/result/<filename>', methods=['GET'])
+def show_results(filename):
+    image_files = os.listdir('result/'+filename)
+    return render_template('results.html', image_files=image_files, filename=filename)
 
 @app.route('/videos/<filename>')
 def get_video(filename):
     return send_from_directory('videos', filename)
+
+@app.route('/get_image_dir/<filename>')
+def get_image_dir(filename):
+    return send_from_directory('templates/assets/result/'+filename, 'videos_results')
 
 
 @app.route('/api/upload_video', methods=['POST'])
@@ -39,6 +44,9 @@ def upload_video():
         file.save(os.path.join('videos', filename))
         return "Video uploaded successfully", 200
     
+
+
+
 @app.route('/api/start_post_process', methods=['POST'])
 def start_post_process():
     data = request.json
@@ -48,6 +56,7 @@ def start_post_process():
     # Assuming there's a function in report_repo to handle post processing
     # result = report_repo.start_post_process(video)
     print('Post processing video:', video)
+    LabelImages(video)
     return jsonify({"success": True, "video": video}), 200
 
 @app.route('/api/reports', methods=['POST'])
