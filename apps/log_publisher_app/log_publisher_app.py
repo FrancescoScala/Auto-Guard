@@ -35,7 +35,7 @@ class LogPublisherApp(object):
     def __init__(self):
         self.executor.submit(self.publish_reports)
 
-        
+
     def run(self):
         vehicle_dynamics_sub = StringSubscriber("vehicle_dynamics")
         vehicle_dynamics_sub.set_callback(self.vehicle_dynamics_callback)
@@ -64,8 +64,8 @@ class LogPublisherApp(object):
         headers = {"Content-Type": "application/json"}
         response = requests.post(url, headers=headers, data=report_json)
         print("sent")
-        
-    
+
+
     # Callback for receiving vehicle_dynamics messages
     def vehicle_dynamics_callback(self, topic_name, msg, time):
         def add_signal():
@@ -94,9 +94,9 @@ class LogPublisherApp(object):
             if critical_level > 0:
                 report = ReportDTO(
                     schema_version="1.0",
-                    vehicle_id="XYZ123", 
-                    stop_timestamp=time, 
-                    criticality_level=critical_level, 
+                    vehicle_id="XYZ123",
+                    stop_timestamp=time,
+                    criticality_level=critical_level,
                     vehicle_dynamics=self.vehicle_dynamics_samples
                 )
                 self.reports.append(report)
