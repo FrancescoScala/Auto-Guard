@@ -65,9 +65,18 @@ The `Synthetic Data Geneator` is reponsible for artificially producing dynamic v
 ## Running the application
 
 ### Prerequisites
-- docker or podman. Change the following commands accordingly.
+Docker and VScode with Dev Container extension. Open the Dev Container in VScode as usual. If it does not work for you, try the following steps:
 
-### Reports dashboard
+```shell
+docker build -t shift2sdv-dev:0.1 --target dev -f .devcontainer/Dockerfile .
+```
+
+Once done, you can start the container and run a bash shell in it:
+```shell
+docker run -it --privileged --name shift2sdv-dev -v <absolute/path/to>/challenge-shift-to-sdv:/workspaces/shift2sdv -p 25551:25551 --workdir /workspaces/shift2sdv shift2sdv-dev:0.1 /bin/bash
+````
+
+### Reports dashboard (Outside the Dev Container)
 From the project folder, navigate to:
 ```shell
 cd backend/reports-backend
@@ -83,56 +92,50 @@ docker compose up
 Leave the terminal open. The dashboard will be available at [this link](http://localhost:5010/reports).
 
 ### Ankaios cluster
-From the project folder, run the following command to build the container:
-
-```shell
-docker build -t shift2sdv-dev:0.1 --target dev -f .devcontainer/Dockerfile .
-```
-
-Once done, you can start the container and run a bash shell in it:
-
-```shell
-docker run -it --privileged --name shift2sdv-dev -v <absolute/path/to>/challenge-shift-to-sdv:/workspaces/shift2sdv -p 25551:25551 --workdir /workspaces/shift2sdv shift2sdv-dev:0.1 /bin/bash
-```
-
-Start the Ankaios cluster using:
+Run the following command to build the container images and start the development deployment:
 
 ```shell
 scripts/restart_shift2sdv
 ```
 
-### Deploy Log Publisher
+### Building the applications with the CI/CD pipeline
+Inside your Dev Container, log into your container registry with docker. In this repository, a dedicated dockerhub registry is used and already filled with the containerized workloads for demonstration purposes. If you want to update the applications, run
+```shell
+scripts/cicd-build-apps-multi-arch
+```
+to rebuild and reupload the multi architecture container images to the container registry.
 
-In order to launch the log publisher, we'll need to first upload its image to docker hub and then 
-we'll be able to deploy it trough the "Workload Administrator"
-
-* Run `scripts/cicd-build-apps-multi-arch` to build the applications
-* Run `scripts/cicd-last-step` to send and MQTT message to the broker (`mosquitto_pub` is required)
+### Deploying the example application via MQTT
+When done, you can deploy the `Log Publisher App` with
+```shell
+scripts/cicd-last-step
+```
+This sends out the MQTT message to start the workload on the target device. the script is made to stop the `Log Publisher App` after a minute again.
+You can also manually deploy (start or update) an application using MQTT by either sending an Ankaios Manifest to `vehicle/{ID}/manifest/apply` (`ID` can be anything or _all_ for rollout to the entire fleet), or sending a JSON (example defined in [scripts/cicd-last-step](scripts/cicd-last-step)) to `/vehicle/{ID}/workload/start`.
+A workload can be stopped by sending the exact same manifest to `vehicle/{ID}/manifest/delete` or just sending the name of the workload (no JSON, just a string) to `/vehicle/{ID}/workload/stop`.
 
 ### Use synthetic data
 
-In order to test the application, we have created the `synthetic_vdy` app to publish synthetic measurements to the `vehicle_dynamics_synthetic` topic.
-
-From the project path inside the dev container:
+In order to test the `Log Publisher App`, we have created the `synthetic_vdy` app to publish synthetic measurements to the `vehicle_dynamics_synthetic` topic. Run
 
 ```shell
 cd apps/synthetic_vdy
 python3 -u ./synthetic_vdy_app.py
 ```
 
-Critical reports will now appear on the reports dashboard.
+Critical reports will appear on the Reporting dashboard when the `Log Publisher App` is running.
 
 ## Summary
-- `workload_administrator` application is ran using Ankaios at vehicle startup and listens for workload updates over MQTT
-- A newly created containerized application `log_publisher_app` is built, pushed to a container registry and deployed to the vehicle over MQTT (which makes the `workload_administrator` app and to start it over Ankaios)
+- `Workload Administrator` application is ran using Ankaios at vehicle startup and listens for workload updates over MQTT
+- A newly created containerized application `Log Publisher App` is built, pushed to a container registry and deployed to the vehicle over MQTT (which makes the `Workload Administrator` app and to start it over Ankaios)
 - Via MQTT, the vehicle workload state change and regular updates of the vehicle are received
 - On the Ankaios Dashboard, the running application is visible
-- The `log_publisher_app` subscribes to eCAL data, detects an emergency brake and uploads the recording to the cloud over a REST API
+- The `Log Publisher App` subscribes to eCAL data, detects an emergency brake and uploads the recording to the cloud over a REST API
 - Emergency brake reports are visible in the GUI
-- Via MQTT, the `log_publisher_app`'s trigger condition can be updated, different reports show up on the GUI
-- Via MQTT, the `log_publisher_app` can be stopped again
+- Via MQTT, the `Log Publisher App`'s trigger condition can be updated, different reports show up on the GUI
+- Via MQTT, the `Log Publisher App` can be stopped again
 - The MQTT message received  indicate it has in fact stopped
-- On the Ankaios Dashboard, the running `log_publisher_app` application has disappeared
+- On the Ankaios Dashboard, the running `Log Publisher App` application has disappeared
 
 # Roadmap
 More features have been planned for possible future releases
