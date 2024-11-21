@@ -54,13 +54,16 @@ Start the Ankaios cluster using:
 ```shell
 scripts/restart_shift2sdv
 ```
-The provided `scripts/restart_shift2sdv.sh` has been modified to show the `log_publisher_app` logs.
 
-## Stream measurement samples
+## Use synthetic data
 
-In order to publish the measurement samples on ecal, you can use the following command:
+In order to test the application, we have created the `synthetic_vdy` app to publish synthetic measurements to the `vehicle_dynamics_synthetic` topic.
+
+From the project path inside the dev container:
+
 ```shell
-ecal_play -m measurements/<ecal_recording_folder>
+cd apps/synthetic_vdy
+python3 -u ./synthetic_vdy_app.py
 ```
 
 Critical reports will now appear on the reports dashboard.
