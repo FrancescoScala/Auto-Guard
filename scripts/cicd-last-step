@@ -1,0 +1,41 @@
+#!/bin/bash
+set -e
+
+app=log_publisher_app
+vehicle_id=all
+device=hpc2
+registry="docker.io/sboettdev"
+team=caliperkings
+image_name="${team}_${app}"
+workload=$(cat <<EOF
+{
+    "name": "$app",
+    "agent": "$device",
+    "restart_policy": "never",
+    "image": "$registry/$image_name:latest",
+    "options": ["--net=host", "--ipc=host", "-e", "THRESHOLD_VALUE=2.25"]
+}
+EOF
+)
+
+# deploy
+mosquitto_pub -d \
+    -h 3345d71141b94f0eb2ec8c60a153d4d3.s1.eu.hivemq.cloud \
+    -u hackathon \
+    -P CaliperKing7 \
+    -p 8883 \
+    -t /vehicle/$vehicle_id/workload/start \
+    -m "$workload"
+
+# run it for 1 min
+echo "running the workload for 1 min..."
+sleep 60
+
+# stop
+mosquitto_pub -d \
+    -h 3345d71141b94f0eb2ec8c60a153d4d3.s1.eu.hivemq.cloud \
+    -u hackathon \
+    -P CaliperKing7 \
+    -p 8883 \
+    -t /vehicle/$vehicle_id/workload/stop \
+    -m "$app"

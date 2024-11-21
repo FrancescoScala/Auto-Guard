@@ -35,6 +35,7 @@ RUN apt-get update && apt-get -y install \
     ifstat \
     libqwt-qt5-6 \
     libyaml-cpp0.7 \
+    mosquitto-clients \
     # Add your development tools here ...
     # Cleanup
     && rm -rf /var/lib/apt/lists/* \

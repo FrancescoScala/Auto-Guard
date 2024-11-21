@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# this tool should be ran outside of the dev container as docker is required to use the manifest-tool container (podman does not share its CR credentials!)
+# the manifest-tool must be installed from https://github.com/estesp/manifest-tool
+
+set -e
+shopt -s expand_aliases
+
+base_dir="./apps"
+registry="docker.io/sboettdev"
+team=caliperkings
+
+# build the container for all applications in the apps folder
+apps=$(find "$base_dir" -maxdepth 1 -mindepth 1 -type d -printf "%f\n")
+for app in $apps; do
+    image_name="${team}_${app}"
+    dockerfile="$base_dir/$app/Dockerfile"
+    # Check if VERSION is set
+    if [ -f "$dockerfile" ]; then
+        echo "Building container for $app ..."
+        docker build --platform linux/amd64 -t "$registry/$image_name:amd64" "$base_dir/$app"
+        docker push $registry/$image_name:amd64
+        docker build --platform linux/arm64 -t "$registry/$image_name:arm64" "$base_dir/$app"
+        docker push $registry/$image_name:arm64
+        manifest-tool \
+          --debug \
+          push from-args \
+          --platforms linux/amd64,linux/arm64 \
+          --template $registry/$image_name:ARCH \
+          --target $registry/$image_name:latest
+        echo "done."
+    else
+        echo "No Dockerfile found under $dockerfile. Skipping app $app."
+    fi
+done
