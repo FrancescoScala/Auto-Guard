@@ -16,6 +16,55 @@ The application is running in the vehicle at startup as part of the initial Anka
 As a newly created application `log_publisher_app` that shall be deployed to the fleet, we created an containerized workload (written in Python) which reads and records streamed eCAL data (either live or previously recorded and played back). It detect a certain trigger event based on a trigger condition. The formula for the trigger condition (based on eCAL data) is customizable remotely via MQTT. For our example application, we chose the detection of an emergency brake. The recorded data around the detected trigger event (a few seconds before and after the event) is uploaded to a cloud server via a REST API and saved in a database. The list of occurred events can be seen on a web application running in the cloud as well.
 The entire workload is built, pushed to a container registry in the cloudand remotely deployed via MQTT via the in-vehicle `workload_administrator`.
 
+## Installation
+
+### Prerequisites
+- docker or podman. Change the following commands accordingly.
+
+### Reports dashboard
+From the project folder, navigate to:
+```shell
+cd backend/reports-backend
+```
+
+Run docker/podman compose to build and start the reports dashboard:
+```shell
+docker compose build
+docker compose down
+docker compose up
+```
+
+Leave the terminal open. The dashboard will be available at [this link](http://localhost:5010/reports).
+
+### Ankaios cluster
+From the project folder, run the following command to build the container:
+
+```shell
+docker build -t shift2sdv-dev:0.1 --target dev -f .devcontainer/Dockerfile .
+```
+
+Once done, you can start the container and run a bash shell in it:
+
+```shell
+docker run -it --privileged --name shift2sdv-dev -v <absolute/path/to>/challenge-shift-to-sdv:/workspaces/shift2sdv -p 25551:25551 --workdir /workspaces/shift2sdv shift2sdv-dev:0.1 /bin/bash
+```
+
+Start the Ankaios cluster using:
+
+```shell
+scripts/restart_shift2sdv
+```
+The provided `scripts/restart_shift2sdv.sh` has been modified to show the `log_publisher_app` logs.
+
+## Stream measurement samples
+
+In order to publish the measurement samples on ecal, you can use the following command:
+```shell
+ecal_play -m measurements/<ecal_recording_folder>
+```
+
+Critical reports will now appear on the reports dashboard.
+
 ## Summary
 - `workload_administrator` application is ran using Ankaios at vehicle startup and listens for workload updates over MQTT
 - a newly created containerized application `log_publisher_app` is built, pushed to a container registry and deployed to the vehicle over MQTT (which makes the `workload_administrator` app and to start it over Ankaios)
