@@ -1,83 +1,15 @@
-import json
+from flask import Flask
 
-from flask import Flask, request, jsonify, render_template, send_from_directory
-import os
-
-import src.report as report_repo
-from label_images import LabelImages
+import src.controllers.config_controller as config_controller
+import src.controllers.report_controller as report_controller
+import src.controllers.video_controller as video_controller
+from src.mqtt_client import MqttClient
 
 app = Flask(__name__, static_folder="templates/assets")
-
-
-@app.route('/api/reports', methods=['GET'])
-def list_reports():
-    return jsonify(report_repo.list())
-
-@app.route('/videos', methods=['GET'])
-def show_videos():
-    video_files = os.listdir('videos')
-    return render_template('videos.html', video_files=video_files, mimetype='video/mp4')
-
-@app.route('/result/<filename>', methods=['GET'])
-def show_results(filename):
-    image_files = os.listdir('result/'+filename)
-    return render_template('results.html', image_files=image_files, filename=filename)
-
-@app.route('/videos/<filename>')
-def get_video(filename):
-    return send_from_directory('videos', filename)
-
-@app.route('/get_image_dir/<filename>')
-def get_image_dir(filename):
-    return send_from_directory('templates/assets/result/'+filename, 'videos_results')
-
-
-@app.route('/api/upload_video', methods=['POST'])
-def upload_video():
-    if 'video' not in request.files:
-        return "No video part", 400
-    file = request.files['video']
-    if file.filename == '':
-        return "No selected video", 400
-    if file:
-        filename = file.filename
-        file.save(os.path.join('videos', filename))
-        return "Video uploaded successfully", 200
-    
-
-
-
-@app.route('/api/start_post_process', methods=['POST'])
-def start_post_process():
-    data = request.json
-    video = data.get('video')
-    if not video:
-        return jsonify({"error": "No video provided"}), 400
-    # Assuming there's a function in report_repo to handle post processing
-    # result = report_repo.start_post_process(video)
-    print('Post processing video:', video)
-    LabelImages(video)
-    return jsonify({"success": True, "video": video}), 200
-
-@app.route('/api/reports', methods=['POST'])
-def add_report():
-    report = request.json
-    report_repo.add(json.dumps(report))
-    return "OK"
-
-
-@app.route("/reports", methods=['GET'])
-def show_reports():
-    reports = report_repo.list()
-    return render_template('reports.html', reports=reports)
-
-
-@app.route("/reports/<int:report_id>", methods=['GET'])
-def show_report(report_id: int):
-    report = report_repo.get(report_id)
-    return render_template('report.html', report=report)
-
+mqtt_client = MqttClient()
+video_controller.init_video_controller(app)
+config_controller.init_config_controller(app, mqtt_client)
+report_controller.init_report_routes(app)
 
 if __name__ == '__main__':
-    report_repo.init_table()
-    app.run(debug=True, host='', port=3002)
+    app.run(debug=True)
