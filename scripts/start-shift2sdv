@@ -14,6 +14,3 @@ RUST_LOG=debug ank-agent --insecure --name hpc1 2> "$ANKAIOS_LOG_DIR/ank-agent-h
 
 echo "Staring up Ankaios agent hpc2 with TLS disabled"
 RUST_LOG=debug ank-agent --insecure --name hpc2 2> "$ANKAIOS_LOG_DIR/ank-agent-hpc2" &
-
-echo "Staring up Ankaios agent agent_A with TLS disabled"
-RUST_LOG=debug ank-agent --insecure --name agent_A 2> "$ANKAIOS_LOG_DIR/ank-agent-agent_A" &
