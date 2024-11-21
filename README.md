@@ -1,3 +1,6 @@
+# Hackathon documentation
+[documentation](HACKATHON.md)
+
 # Forget the conventional - Shift to SDV
 
 This repository provides a starter template for solving the "Forget the conventional - Shift to SDV" challenge using the following Eclipse SDV projects:

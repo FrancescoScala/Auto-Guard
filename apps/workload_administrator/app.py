@@ -107,7 +107,7 @@ def run(mqtt_client: mqtt.Client) -> None:
                 for workload_name, workload_details in workload.items():
                     messages.append(f"{agent}: {workload_name} ({list(workload_details.values())[0]['substate']})")
             send_workload_state(mqtt_client, messages)
-            time.sleep(10)
+            time.sleep(3)
 
 
 if __name__ == "__main__":
