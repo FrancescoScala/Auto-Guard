@@ -1,11 +1,9 @@
 import json
-import os
 
-import src.repos.report_repo as report_repo
 from flask import Flask, request, jsonify, render_template
 
 
-def init_report_routes(app: Flask):
+def init_report_routes(app: Flask, report_repo):
     @app.route('/api/reports', methods=['GET'])
     def list_reports():
         return jsonify(report_repo.list())

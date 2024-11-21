@@ -1,6 +1,7 @@
 import os
 
-from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask import Flask, request, render_template, send_from_directory
+
 
 # from src.label_images import LabelImages
 
@@ -40,4 +41,3 @@ def init_video_controller(app: Flask):
             file.save(os.path.join('videos', filename))
             # LabelImages(filename)
             return "Video uploaded successfully", 200
-
