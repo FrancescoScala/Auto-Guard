@@ -10,6 +10,7 @@ MQTT_BROKER_PORT: int = int(os.environ.get('MQTT_BROKER_PORT'))
 MQTT_BROKER_USER: str = os.environ.get('MQTT_BROKER_USER')
 MQTT_BROKER_PASS: str = os.environ.get('MQTT_BROKER_PASS')
 BASE_TOPIC: str = f"/vehicle/{VEHICLE_ID}"
+ALL_BASE_TOPIC: str = f"/vehicle/all"
 
 # logging
 logger: logging.Logger = logging.getLogger(NAME)
@@ -40,6 +41,8 @@ def run(mqtt_client: mqtt.Client) -> None:
             for topic in ["manifest/apply", "manifest/delete", "workload/start", "workload/stop"]:
                 client.subscribe(f"{BASE_TOPIC}/{topic}")
                 logger.info(f"Subscribed to {BASE_TOPIC}/{topic}")
+                client.subscribe(f"{ALL_BASE_TOPIC}/{topic}")
+                logger.info(f"Subscribed to {ALL_BASE_TOPIC}/{topic}")
 
         # Callback when a PUBLISH message is received from the MQTT server
         def on_message(client, userdata, msg):
@@ -47,26 +50,26 @@ def run(mqtt_client: mqtt.Client) -> None:
                 logger.debug(f"Received message on topic {msg.topic}")
 
                 # handle manifest request
-                if msg.topic.startswith(f"{BASE_TOPIC}/manifest/"):
+                if msg.topic.startswith(f"{BASE_TOPIC}/manifest/") or msg.topic.startswith(f"{ALL_BASE_TOPIC}/manifest/"):
                     # apply
                     manifest: Manifest = Manifest.from_string(str(msg.payload.decode()))
                     workload_list: list = list(manifest._manifest['workloads'].keys())
-                    if msg.topic == f"{BASE_TOPIC}/manifest/apply":
+                    if msg.topic in [f"{BASE_TOPIC}/manifest/apply", f"{ALL_BASE_TOPIC}/manifest/apply"]:
                         logger.info(f"starting workloads {', '.join(workload_list)}")
                         ret: UpdateStateSuccess = ankaios.apply_manifest(manifest)
                         send_status(client, ret, 'added_workloads')
 
                     # delete
-                    elif msg.topic == f"{BASE_TOPIC}/manifest/delete":
+                    elif msg.topic in [f"{BASE_TOPIC}/manifest/delete", f"{ALL_BASE_TOPIC}/manifest/delete"]:
                         logger.info(f"stopping workloads {', '.join(workload_list)}")
                         ret: UpdateStateSuccess = ankaios.delete_manifest(manifest)
                         send_status(client, ret, 'deleted_workloads')
 
                 # handle workload requests
-                elif msg.topic.startswith(f"{BASE_TOPIC}/workload/"):
+                elif msg.topic.startswith(f"{BASE_TOPIC}/workload/") or msg.topic.startswith(f"{ALL_BASE_TOPIC}/workload/"):
                     payload: str = str(msg.payload.decode())
                     # start
-                    if msg.topic == f"{BASE_TOPIC}/workload/start":
+                    if msg.topic in [f"{BASE_TOPIC}/workload/start", f"{ALL_BASE_TOPIC}/workload/start"]:
                         details: dict = json.loads(payload)
                         workload: Workload = Workload(details["name"])
                         workload.update_agent_name(details["agent"])
@@ -76,7 +79,7 @@ def run(mqtt_client: mqtt.Client) -> None:
                         ret: UpdateStateSuccess = ankaios.apply_workload(workload)
                         send_status(client, ret, 'added_workloads')
                     # stop
-                    if msg.topic == f"{BASE_TOPIC}/workload/stop":
+                    if msg.topic in [f"{BASE_TOPIC}/workload/stop", f"{ALL_BASE_TOPIC}/workload/stop"]:
                         ret: UpdateStateSuccess = ankaios.delete_workload(payload)
                         send_status(client, ret, 'deleted_workloads')
             except Exception as e:
