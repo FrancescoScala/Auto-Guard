@@ -24,6 +24,9 @@
                   data-target="#reportData" aria-expanded="false" aria-controls="collapseExample">
             See Report
           </button>
+          <a class="btn btn-primary" type="button" aria-expanded="false" href="{{ url_for('show_videos') }}">
+            See Video
+          </a>
           <div class="collapse" id="reportData">
             <button class="btn btn-secondary mt-2" onclick="copyToClipboard()">Copy to Clipboard</button>
             <pre><code id="reportDataText">{{ report_data }}</code></pre>

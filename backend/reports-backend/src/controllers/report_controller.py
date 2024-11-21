@@ -1,4 +1,5 @@
 import json
+import os
 
 import src.repos.report_repo as report_repo
 from flask import Flask, request, jsonify, render_template
@@ -18,7 +19,7 @@ def init_report_routes(app: Flask):
     @app.route("/reports", methods=['GET'])
     def show_reports():
         reports = report_repo.list()
-        return render_template('reports.html', reports=reports)
+        return render_template('reports.html', reports=reports, video_file=video_file)
 
     @app.route("/reports/<int:report_id>", methods=['GET'])
     def show_report(report_id: int):

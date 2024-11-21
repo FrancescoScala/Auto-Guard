@@ -38,6 +38,6 @@ def init_video_controller(app: Flask):
         if file:
             filename = file.filename
             file.save(os.path.join('videos', filename))
-            LabelImages(filename)
+            # LabelImages(filename)
             return "Video uploaded successfully", 200
 
