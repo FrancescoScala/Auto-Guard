@@ -3,6 +3,8 @@ import sys, time, json, logging, os
 import ecal.core.core as ecal_core
 import requests
 from ecal.core.subscriber import StringSubscriber
+
+from apps.log_publisher_app.anomaly_detector import AnomalyDetector
 from signals import Signals, parse_signals
 from report_dto import ReportDTO
 from collections import deque
@@ -30,6 +32,7 @@ class LogPublisherApp(object):
     report_dashboard_uri = os.getenv("REPORT_DASHBOARD_URI", "<report_uri_dashboard>")
     critical_speed_thresholds = {test_val: 1, 30: 2, 40: 3}
     vehicle_dynamics_samples = deque(maxlen=50)
+    anomaly_detector = AnomalyDetector(vehicle_dynamics_samples)
     reports = deque()
 
     def __init__(self):
@@ -67,34 +70,25 @@ class LogPublisherApp(object):
             signal_schema: Signals = parse_signals(msg)
             self.vehicle_dynamics_samples.append(signal_schema)
 
-        def detect_trigger() -> int:
-            if len(self.vehicle_dynamics_samples) < 50:
-                return 0
-            else:
-                curr_signal = self.vehicle_dynamics_samples[-1]
-                last_signal = self.vehicle_dynamics_samples[0]
+        def has_enough_samples():
+            return len(self.vehicle_dynamics_samples) < 50
 
-                if curr_signal.speed < last_signal.speed:
-                    speed_diff = last_signal.speed - curr_signal.speed
-                    for key, value in self.critical_speed_thresholds.items():
-                        if speed_diff >= key:
-                            print(f"Critical speed diff: {speed_diff}")
-                            return value
-                return 0
+        def detect_trigger():
+            return self.anomaly_detector.evaluate_triggers()
 
         try:
             add_signal()
-            critical_level = detect_trigger()
-            if critical_level > 0:
-                report = ReportDTO(
-                    schema_version="1.0",
-                    vehicle_id=self.vehicle_id,
-                    stop_timestamp=time,
-                    criticality_level=critical_level,
-                    vehicle_dynamics=self.vehicle_dynamics_samples
-                )
-                self.reports.append(report)
-                self.vehicle_dynamics_samples.clear()
+            if has_enough_samples():
+                triggers = detect_trigger()
+                if any(triggers.values()):
+                    report = ReportDTO(
+                        schema_version="1.0",
+                        vehicle_id=self.vehicle_id,
+                        stop_timestamp=time,
+                        vehicle_dynamics= list(self.vehicle_dynamics_samples)
+                    )
+                    self.reports.append(report)
+                    self.vehicle_dynamics_samples.clear()
 
         except json.JSONDecodeError:
             logger.error(f"Error: Could not decode message: '{msg}'")

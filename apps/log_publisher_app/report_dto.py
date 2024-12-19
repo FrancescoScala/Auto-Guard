@@ -11,7 +11,6 @@ class ReportDTO:
     schema_version: str
     vehicle_id: str
     stop_timestamp: str
-    criticality_level: int
     vehicle_dynamics: List
         
     def to_dict(self):
@@ -19,6 +18,5 @@ class ReportDTO:
             "schema_version": self.schema_version,
             "vehicle_id": self.vehicle_id,
             "stop_timestamp": self.stop_timestamp,
-            "criticality_level": self.criticality_level,
             "vehicle_dynamics": [signal.to_dict() for signal in self.vehicle_dynamics]
         }

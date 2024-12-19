@@ -157,7 +157,7 @@ More features have been planned for possible future releases
 * **Dynamic Triggers Configuration**: The current release of the "Log Publisher App" only supports recognition 
 of "Emergency Break" events. Our plan to support more triggers is to move away from the current hard-coded approach
 and to instead provide the triggers configuration trough MQTT. References for this feature can be found at 
-[dynamic-triggers.py](assets/dynamic-triggers.py) and [sample-dynamic-triggers](assets/sample-dynamic-triggers.json)
+[dynamic-triggers.py](assets/dynamic-triggers.py) and [sample-dynamic-triggers](assets/triggers.json)
 * **Attach Video to Report**: The current release reports are formed mostly by vehicle_dynamics data. 
 In order to provide even more detailed information for the manufacturers, we'd like to provide video data 
 together with the report
